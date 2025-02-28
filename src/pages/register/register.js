@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {LOGIN_ROUTE} from "../../constants/routes";
+import {HOMEPAGE_ROUTE, LOGIN_ROUTE} from "../../constants/routes";
 
 import './register.css';
 
@@ -19,12 +19,12 @@ const RegisterPage = () => {
     <div className="register-page">
       <header className="header">
         <div className="logo">
-          <Link to="/">
+          <Link to={HOMEPAGE_ROUTE}>
             <h1>Wahlorant</h1>
           </Link>
         </div>
         <div className="nav-buttons">
-          <Link to="/" className="back-btn">Zurück</Link>
+          <Link to={HOMEPAGE_ROUTE} className="back-btn">Zurück</Link>
         </div>
       </header>
 

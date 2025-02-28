@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {REGISTER_ROUTE} from "../../constants/routes";
+import {HOMEPAGE_ROUTE, REGISTER_ROUTE} from "../../constants/routes";
 import './login.css';
 
 const LoginPage = () => {
@@ -16,12 +16,12 @@ const LoginPage = () => {
     <div className="login-page">
       <header className="header">
         <div className="logo">
-          <Link to="/">
+          <Link to={HOMEPAGE_ROUTE}>
             <h1>Wahlorant</h1>
           </Link>
         </div>
         <div className="nav-buttons">
-          <Link to="/" className="back-btn">Zurück</Link>
+          <Link to={HOMEPAGE_ROUTE} className="back-btn">Zurück</Link>
         </div>
       </header>
 
