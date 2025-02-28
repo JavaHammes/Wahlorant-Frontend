@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {LOGIN_ROUTE, REGISTER_ROUTE, ABOUT_ROUTE} from "../../constants/routes";
-
 import './homepage.css';
 
 const HomePage = () => {

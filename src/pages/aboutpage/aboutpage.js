@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import {LOGIN_ROUTE, REGISTER_ROUTE} from "../../constants/routes";
 import './aboutpage.css';
 
 const Aboutpage = () => {
@@ -172,8 +173,8 @@ const Aboutpage = () => {
           <h3>Bereit, Wahlorant zu nutzen?</h3>
           <p>Registrieren Sie Ihr Wahllokal und erleben Sie ein sicheres, modernes Wahlsystem.</p>
           <div className="cta-buttons">
-            <Link to="/register" className="cta-button">Jetzt registrieren</Link>
-            <Link to="/login" className="secondary-button">Anmelden</Link>
+            <Link to={REGISTER_ROUTE} className="cta-button">Jetzt registrieren</Link>
+            <Link to={LOGIN_ROUTE} className="secondary-button">Anmelden</Link>
           </div>
         </div>
       </main>
