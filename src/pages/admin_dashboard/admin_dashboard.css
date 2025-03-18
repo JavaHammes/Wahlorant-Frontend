@@ -1,3 +1,4 @@
+/* Base Layout */
 .admin-dashboard {
   min-height: 100vh;
   display: flex;
@@ -7,6 +8,15 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.admin-container {
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px;
+  width: 100%;
+}
+
+/* Header Styles */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -65,14 +75,7 @@
   transform: translateY(-2px);
 }
 
-.admin-container {
-  flex: 1;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 30px;
-  width: 100%;
-}
-
+/* Dashboard Header */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -88,6 +91,13 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
+}
+
+/* Action Buttons */
+.admin-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .create-btn {
@@ -115,6 +125,7 @@
   font-size: 1.1rem;
 }
 
+/* Stats Section */
 .elections-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -152,6 +163,7 @@
   font-size: 0.9rem;
 }
 
+/* Section Title */
 .section-title {
   font-size: 1.5rem;
   margin: 30px 0 20px;
@@ -172,6 +184,7 @@
   border-radius: 3px;
 }
 
+/* Elections Grid and Cards */
 .elections-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -188,6 +201,8 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
 }
 
 .election-card:hover {
@@ -195,6 +210,7 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
+/* Card Status Styles */
 .election-card.active {
   border-top: 4px solid #4caf50;
 }
@@ -207,6 +223,7 @@
   border-top: 4px solid #2196f3;
 }
 
+/* Card Header */
 .election-header {
   padding: 20px;
   padding-bottom: 10px;
@@ -222,6 +239,7 @@
   flex: 1;
 }
 
+/* Status Badge */
 .status-badge {
   padding: 5px 10px;
   border-radius: 50px;
@@ -248,6 +266,7 @@
   border: 1px solid rgba(33, 150, 243, 0.3);
 }
 
+/* Card Dates */
 .election-dates {
   padding: 0 20px 15px;
   display: flex;
@@ -271,6 +290,7 @@
   color: #e0e0e0;
 }
 
+/* Card Description */
 .election-description {
   padding: 0 20px;
   margin: 0 0 20px;
@@ -280,6 +300,7 @@
   flex-grow: 1;
 }
 
+/* Card Actions */
 .election-actions {
   padding: 15px 20px;
   border-top: 1px solid #333;
@@ -309,6 +330,7 @@
   gap: 10px;
 }
 
+/* Edit and Delete Buttons */
 .edit-btn, .delete-btn {
   width: 32px;
   height: 32px;
@@ -370,17 +392,6 @@
   animation: modalFadeIn 0.3s ease-out;
 }
 
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .modal-header {
   padding: 20px;
   background-color: #252525;
@@ -409,6 +420,7 @@
   color: #ff4b4b;
 }
 
+/* Form Styles */
 .election-form {
   padding: 20px;
 }
@@ -487,6 +499,7 @@
   box-shadow: 0 6px 15px rgba(77, 166, 255, 0.4);
 }
 
+/* Footer */
 .footer {
   background-color: #151515;
   padding: 20px;
@@ -500,7 +513,57 @@
   font-size: 0.9rem;
 }
 
-/* Responsive styles */
+/* Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(77, 166, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0);
+  }
+}
+
+/* Animation Delays for Cards */
+.election-card:nth-child(1) { animation-delay: 0.1s; }
+.election-card:nth-child(2) { animation-delay: 0.2s; }
+.election-card:nth-child(3) { animation-delay: 0.3s; }
+.election-card:nth-child(4) { animation-delay: 0.4s; }
+.election-card:nth-child(5) { animation-delay: 0.5s; }
+.election-card:nth-child(6) { animation-delay: 0.6s; }
+.election-card:nth-child(7) { animation-delay: 0.7s; }
+.election-card:nth-child(8) { animation-delay: 0.8s; }
+
+/* Focus Effects */
+input:focus, textarea:focus {
+  animation: pulse 1.5s infinite;
+}
+
+/* Responsive Styles */
 @media (max-width: 992px) {
   .admin-container {
     padding: 20px;
@@ -533,8 +596,12 @@
     align-items: flex-start;
   }
 
-  .create-btn {
+  .admin-buttons {
     width: 100%;
+  }
+
+  .create-btn {
+    flex: 1;
     justify-content: center;
   }
 
@@ -578,46 +645,5 @@
   .action-buttons {
     width: 100%;
     justify-content: flex-end;
-  }
-}
-
-.election-card {
-  animation: fadeInUp 0.5s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.election-card:nth-child(1) { animation-delay: 0.1s; }
-.election-card:nth-child(2) { animation-delay: 0.2s; }
-.election-card:nth-child(3) { animation-delay: 0.3s; }
-.election-card:nth-child(4) { animation-delay: 0.4s; }
-.election-card:nth-child(5) { animation-delay: 0.5s; }
-.election-card:nth-child(6) { animation-delay: 0.6s; }
-.election-card:nth-child(7) { animation-delay: 0.7s; }
-.election-card:nth-child(8) { animation-delay: 0.8s; }
-
-input:focus, textarea:focus {
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 5px rgba(77, 166, 255, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0);
   }
 }

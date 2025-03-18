@@ -14,8 +14,6 @@ const HomePage = () => {
         </div>
         <div className="auth-buttons">
           <button className="login-btn" onClick={() => navigate(LOGIN_ROUTE)}>Anmelden</button>
-           <button className="register-btn" onClick={() => navigate(REGISTER_ROUTE)}>Registrieren
-          </button>
         </div>
       </header>
 

@@ -122,7 +122,6 @@ const About = () => {
           <h3>Bereit, Wahlorant zu nutzen?</h3>
           <p>Registrieren Sie Ihr Wahllokal und erleben Sie ein sicheres, modernes Wahlsystem.</p>
           <div className="cta-buttons">
-            <Link to={REGISTER_ROUTE} className="cta-button">Jetzt registrieren</Link>
             <Link to={LOGIN_ROUTE} className="secondary-button">Anmelden</Link>
           </div>
         </div>

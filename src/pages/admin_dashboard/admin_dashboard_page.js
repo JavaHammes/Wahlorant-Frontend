@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HOMEPAGE_ROUTE } from '../../constants/routes';
+import { HOMEPAGE_ROUTE, REGISTER_ROUTE } from '../../constants/routes';
 import './admin_dashboard.css';
 
 const AdminDashboardPage = () => {
@@ -173,9 +173,14 @@ const AdminDashboardPage = () => {
       <main className="admin-container">
         <div className="dashboard-header">
           <h2>Wahl-Dashboard</h2>
-          <button className="create-btn" onClick={() => openModal()}>
-            <span className="icon">➕</span> Neue Wahl erstellen
-          </button>
+          <div className="admin-buttons">
+            <button className="create-btn" onClick={() => openModal()}>
+              <span className="icon">➕</span> Neue Wahl erstellen
+            </button>
+            <button className="create-btn" onClick={() => navigate(REGISTER_ROUTE)}>
+              <span className="icon">👤</span> Neues Wahllokal anlegen
+            </button>
+          </div>
         </div>
 
         <div className="elections-container">
@@ -210,46 +215,46 @@ const AdminDashboardPage = () => {
             {elections.map(election => {
               const status = checkElectionStatus(election.startDate, election.endDate);
               return (
-                <div
-                  key={election.id}
-                  className={`election-card ${status}`}
-                >
-                  <div className="election-header">
-                    <h4 className="election-name">{election.name}</h4>
-                    <div className={`status-badge ${status}`}>
-                      {status === 'active' && 'Aktiv'}
-                      {status === 'upcoming' && 'Geplant'}
-                      {status === 'completed' && 'Beendet'}
+                  <div
+                      key={election.id}
+                      className={`election-card ${status}`}
+                  >
+                    <div className="election-header">
+                      <h4 className="election-name">{election.name}</h4>
+                      <div className={`status-badge ${status}`}>
+                        {status === 'active' && 'Aktiv'}
+                        {status === 'upcoming' && 'Geplant'}
+                        {status === 'completed' && 'Beendet'}
+                      </div>
                     </div>
-                  </div>
-                  <div className="election-dates">
-                    <div className="date-group">
-                      <span className="date-label">Start:</span>
-                      <span className="date-value">{formatDate(election.startDate)}</span>
+                    <div className="election-dates">
+                      <div className="date-group">
+                        <span className="date-label">Start:</span>
+                        <span className="date-value">{formatDate(election.startDate)}</span>
+                      </div>
+                      <div className="date-group">
+                        <span className="date-label">Ende:</span>
+                        <span className="date-value">{formatDate(election.endDate)}</span>
+                      </div>
                     </div>
-                    <div className="date-group">
-                      <span className="date-label">Ende:</span>
-                      <span className="date-value">{formatDate(election.endDate)}</span>
-                    </div>
-                  </div>
-                  <p className="election-description">{election.description}</p>
-                  <div className="election-actions">
-                    <button
-                      className="view-results-btn"
-                      onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
-                    >
-                      Ergebnisse anzeigen
-                    </button>
-                    <div className="action-buttons">
-                      <button className="edit-btn" onClick={() => openModal(true, election)}>
-                        ✏️
+                    <p className="election-description">{election.description}</p>
+                    <div className="election-actions">
+                      <button
+                          className="view-results-btn"
+                          onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
+                      >
+                        Ergebnisse anzeigen
                       </button>
-                      <button className="delete-btn" onClick={() => handleDeleteElection(election.id)}>
-                        🗑️
-                      </button>
+                      <div className="action-buttons">
+                        <button className="edit-btn" onClick={() => openModal(true, election)}>
+                          ✏️
+                        </button>
+                        <button className="delete-btn" onClick={() => handleDeleteElection(election.id)}>
+                          🗑️
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
               );
             })}
           </div>
@@ -257,17 +262,17 @@ const AdminDashboardPage = () => {
       </main>
 
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>{isEditMode ? 'Wahl bearbeiten' : 'Neue Wahl erstellen'}</h3>
-              <button className="close-modal" onClick={closeModal}>×</button>
-            </div>
-            <form onSubmit={handleSubmit} className="election-form">
-              <div className="form-group">
-                <label htmlFor="name">Name der Wahl</label>
-                <input
-                  type="text"
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h3>{isEditMode ? 'Wahl bearbeiten' : 'Neue Wahl erstellen'}</h3>
+                <button className="close-modal" onClick={closeModal}>×</button>
+              </div>
+              <form onSubmit={handleSubmit} className="election-form">
+                <div className="form-group">
+                  <label htmlFor="name">Name der Wahl</label>
+                  <input
+                      type="text"
                   id="name"
                   name="name"
                   value={formData.name}
