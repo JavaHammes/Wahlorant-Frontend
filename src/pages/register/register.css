@@ -112,13 +112,6 @@
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  font-size: 0.9rem;
-  color: #b0b0b0;
-  font-weight: 500;
 }
 
 .input-container {
@@ -130,18 +123,20 @@
 .input-icon {
   position: absolute;
   right: 12px;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  color: #4da6ff;
 }
 
 .input-container input {
   width: 100%;
-  padding: 12px 40px 12px 12px;
+  padding: 14px 15px;
   border-radius: 6px;
   border: 1px solid #333;
   background-color: #252525;
   color: #e0e0e0;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: all 0.3s ease;
+  margin-bottom: 12px;
 }
 
 .input-container input:focus {
@@ -151,11 +146,51 @@
 }
 
 .input-container input::placeholder {
-  color: #666;
+  color: #999;
+  font-size: 0.95rem;
+}
+
+/* Address Section Styling */
+.address-section {
+  background-color: rgba(77, 166, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(77, 166, 255, 0.1);
+  margin-top: 5px;
+}
+
+.address-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #4da6ff;
+  font-weight: 500;
+}
+
+.address-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.street-group {
+  grid-column: 1 / span 1;
+}
+
+.house-number-group {
+  grid-column: 2 / span 1;
+}
+
+.postal-code-group {
+  grid-column: 1 / span 1;
+}
+
+.city-group {
+  grid-column: 2 / span 1;
 }
 
 .register-button {
-  margin-top: 20px;
+  margin-top: 25px;
   padding: 14px;
   background: linear-gradient(90deg, #4da6ff, #2f8ce0);
   color: white;
@@ -171,24 +206,6 @@
 .register-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(77, 166, 255, 0.4);
-}
-
-.login-prompt {
-  margin-top: 25px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #a0a0a0;
-}
-
-.login-link {
-  color: #4da6ff;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.login-link:hover {
-  text-decoration: underline;
 }
 
 .footer {
@@ -215,6 +232,19 @@
   }
 }
 
+@media (max-width: 768px) {
+  .address-row {
+    grid-template-columns: 1fr;
+  }
+
+  .street-group,
+  .house-number-group,
+  .postal-code-group,
+  .city-group {
+    grid-column: 1;
+  }
+}
+
 @media (max-width: 576px) {
   .header {
     padding: 15px 20px;
@@ -230,6 +260,10 @@
 
   .register-header h2 {
     font-size: 1.8rem;
+  }
+
+  .address-section {
+    padding: 12px;
   }
 }
 
