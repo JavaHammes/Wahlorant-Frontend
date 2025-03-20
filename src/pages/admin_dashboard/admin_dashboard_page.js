@@ -16,6 +16,11 @@ const AdminDashboardPage = () => {
     description: ''
   });
 
+  // State for voting stations
+  const [votingStations, setVotingStations] = useState([
+    { id: 1, name: '', votes: '' }
+  ]);
+
   useEffect(() => {
     // TODO Replace with actual Authentication
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
@@ -99,6 +104,9 @@ const AdminDashboardPage = () => {
         endDate: new Date(election.endDate).toISOString().slice(0, 16),
         description: election.description
       });
+
+      // Reset voting stations for edit mode
+      setVotingStations(election.votingStations || [{ id: 1, name: '', votes: '' }]);
     } else {
       setIsEditMode(false);
       setCurrentElection(null);
@@ -108,6 +116,9 @@ const AdminDashboardPage = () => {
         endDate: '',
         description: ''
       });
+
+      // Reset voting stations for new election
+      setVotingStations([{ id: 1, name: '', votes: '' }]);
     }
     setIsModalOpen(true);
   };
@@ -124,14 +135,48 @@ const AdminDashboardPage = () => {
     });
   };
 
+  // Handle changes in voting station inputs
+  const handleStationChange = (id, field, value) => {
+    const updatedStations = votingStations.map(station =>
+      station.id === id ? { ...station, [field]: value } : station
+    );
+    setVotingStations(updatedStations);
+  };
+
+  // Add a new voting station
+  const addVotingStation = () => {
+    const newId = votingStations.length > 0
+      ? Math.max(...votingStations.map(s => s.id)) + 1
+      : 1;
+
+    setVotingStations([
+      ...votingStations,
+      { id: newId, name: '', votes: '' }
+    ]);
+  };
+
+  // Remove a voting station
+  const removeVotingStation = (id) => {
+    if (votingStations.length > 1) {
+      setVotingStations(votingStations.filter(station => station.id !== id));
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Filter out empty voting stations
+    const filteredStations = votingStations.filter(station => station.name.trim() !== '');
 
     if (isEditMode && currentElection) {
       // Update existing election
       const updatedElections = elections.map(election =>
         election.id === currentElection.id
-          ? { ...election, ...formData }
+          ? {
+              ...election,
+              ...formData,
+              votingStations: filteredStations
+            }
           : election
       );
       setElections(updatedElections);
@@ -139,7 +184,8 @@ const AdminDashboardPage = () => {
       // Add new election
       const newElection = {
         id: Date.now(), // simple id generation for demo
-        ...formData
+        ...formData,
+        votingStations: filteredStations
       };
       setElections([...elections, newElection]);
     }
@@ -175,7 +221,7 @@ const AdminDashboardPage = () => {
           <h2>Wahl-Dashboard</h2>
           <div className="admin-buttons">
             <button className="create-btn" onClick={() => openModal()}>
-              <span className="icon">➕</span> Neue Wahl erstellen
+              <span className="icon">📊</span> Neue Wahl erstellen
             </button>
             <button className="create-btn" onClick={() => navigate(REGISTER_ROUTE)}>
               <span className="icon">👤</span> Neues Wahllokal anlegen
@@ -215,46 +261,51 @@ const AdminDashboardPage = () => {
             {elections.map(election => {
               const status = checkElectionStatus(election.startDate, election.endDate);
               return (
-                  <div
-                      key={election.id}
-                      className={`election-card ${status}`}
-                  >
-                    <div className="election-header">
-                      <h4 className="election-name">{election.name}</h4>
-                      <div className={`status-badge ${status}`}>
-                        {status === 'active' && 'Aktiv'}
-                        {status === 'upcoming' && 'Geplant'}
-                        {status === 'completed' && 'Beendet'}
-                      </div>
-                    </div>
-                    <div className="election-dates">
-                      <div className="date-group">
-                        <span className="date-label">Start:</span>
-                        <span className="date-value">{formatDate(election.startDate)}</span>
-                      </div>
-                      <div className="date-group">
-                        <span className="date-label">Ende:</span>
-                        <span className="date-value">{formatDate(election.endDate)}</span>
-                      </div>
-                    </div>
-                    <p className="election-description">{election.description}</p>
-                    <div className="election-actions">
-                      <button
-                          className="view-results-btn"
-                          onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
-                      >
-                        Ergebnisse anzeigen
-                      </button>
-                      <div className="action-buttons">
-                        <button className="edit-btn" onClick={() => openModal(true, election)}>
-                          ✏️
-                        </button>
-                        <button className="delete-btn" onClick={() => handleDeleteElection(election.id)}>
-                          🗑️
-                        </button>
-                      </div>
+                <div
+                  key={election.id}
+                  className={`election-card ${status}`}
+                >
+                  <div className="election-header">
+                    <h4 className="election-name">{election.name}</h4>
+                    <div className={`status-badge ${status}`}>
+                      {status === 'active' && 'Aktiv'}
+                      {status === 'upcoming' && 'Geplant'}
+                      {status === 'completed' && 'Beendet'}
                     </div>
                   </div>
+                  <div className="election-dates">
+                    <div className="date-group">
+                      <span className="date-label">Start:</span>
+                      <span className="date-value">{formatDate(election.startDate)}</span>
+                    </div>
+                    <div className="date-group">
+                      <span className="date-label">Ende:</span>
+                      <span className="date-value">{formatDate(election.endDate)}</span>
+                    </div>
+                  </div>
+                  <p className="election-description">{election.description}</p>
+                  {election.votingStations && election.votingStations.length > 0 && (
+                    <div className="voting-stations-summary">
+                      <span className="stations-count">{election.votingStations.length} Wahllokale</span>
+                    </div>
+                  )}
+                  <div className="election-actions">
+                    <button
+                      className="view-results-btn"
+                      onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
+                    >
+                      Ergebnisse anzeigen
+                    </button>
+                    <div className="action-buttons">
+                      <button className="edit-btn" onClick={() => openModal(true, election)}>
+                        ✏️
+                      </button>
+                      <button className="delete-btn" onClick={() => handleDeleteElection(election.id)}>
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -262,17 +313,17 @@ const AdminDashboardPage = () => {
       </main>
 
       {isModalOpen && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h3>{isEditMode ? 'Wahl bearbeiten' : 'Neue Wahl erstellen'}</h3>
-                <button className="close-modal" onClick={closeModal}>×</button>
-              </div>
-              <form onSubmit={handleSubmit} className="election-form">
-                <div className="form-group">
-                  <label htmlFor="name">Name der Wahl</label>
-                  <input
-                      type="text"
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>{isEditMode ? 'Wahl bearbeiten' : 'Neue Wahl erstellen'}</h3>
+              <button className="close-modal" onClick={closeModal}>×</button>
+            </div>
+            <form onSubmit={handleSubmit} className="election-form">
+              <div className="form-group">
+                <label htmlFor="name">Name der Wahl</label>
+                <input
+                  type="text"
                   id="name"
                   name="name"
                   value={formData.name}
@@ -317,6 +368,55 @@ const AdminDashboardPage = () => {
                   required
                 ></textarea>
               </div>
+
+              {/* Voting Stations Section */}
+              <div className="voting-stations-section">
+                <div className="section-header">
+                  <h4>Wahllokale</h4>
+                  <button
+                    type="button"
+                    onClick={addVotingStation}
+                    className="add-station-btn"
+                  >
+                    + Wahllokal hinzufügen
+                  </button>
+                </div>
+
+                <div className="voting-stations-list">
+                  {votingStations.map((station) => (
+                    <div key={station.id} className="voting-station-item">
+                      <div className="station-inputs">
+                        <input
+                          type="text"
+                          placeholder="Name des Wahllokals"
+                          value={station.name}
+                          onChange={(e) => handleStationChange(station.id, 'name', e.target.value)}
+                          className="station-name-input"
+                        />
+                        <input
+                          type="number"
+                          placeholder="Stimmen"
+                          value={station.votes}
+                          onChange={(e) => handleStationChange(station.id, 'votes', e.target.value)}
+                          min="0"
+                          className="station-votes-input"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => removeVotingStation(station.id)}
+                        className="remove-station-btn"
+                        title="Wahllokal entfernen"
+                        disabled={votingStations.length <= 1}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="form-actions">
                 <button type="button" className="cancel-btn" onClick={closeModal}>Abbrechen</button>
                 <button type="submit" className="submit-btn">

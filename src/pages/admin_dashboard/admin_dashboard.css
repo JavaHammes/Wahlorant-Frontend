@@ -647,3 +647,178 @@ input:focus, textarea:focus {
     justify-content: flex-end;
   }
 }
+
+/* Add these styles to your admin_dashboard.css file */
+
+/* Admin buttons container */
+.admin-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Voting Stations Section */
+.voting-stations-section {
+  background-color: rgba(77, 166, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(77, 166, 255, 0.1);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-header h4 {
+  font-size: 1.1rem;
+  color: #4da6ff;
+  margin: 0;
+}
+
+.add-station-btn {
+  padding: 6px 12px;
+  background-color: transparent;
+  color: #4da6ff;
+  border: 1px solid #4da6ff;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-station-btn:hover {
+  background-color: rgba(77, 166, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.voting-stations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.voting-station-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #1e1e1e;
+  border-radius: 6px;
+  padding: 10px;
+  border: 1px solid #333;
+  transition: all 0.3s ease;
+}
+
+.voting-station-item:hover {
+  border-color: #4da6ff;
+  background-color: #252525;
+}
+
+.station-inputs {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+}
+
+.station-name-input {
+  flex: 3;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #333;
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.station-votes-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #333;
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.station-name-input:focus,
+.station-votes-input:focus {
+  outline: none;
+  border-color: #4da6ff;
+  box-shadow: 0 0 0 2px rgba(77, 166, 255, 0.2);
+}
+
+.remove-station-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 75, 75, 0.1);
+  color: #ff4b4b;
+  border: 1px solid rgba(255, 75, 75, 0.2);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.remove-station-btn:hover:not(:disabled) {
+  background-color: rgba(255, 75, 75, 0.2);
+  transform: scale(1.1);
+}
+
+.remove-station-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.voting-stations-summary {
+  padding: 0 20px 10px;
+  font-size: 0.9rem;
+  color: #4da6ff;
+}
+
+.stations-count {
+  background-color: rgba(77, 166, 255, 0.1);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(77, 166, 255, 0.2);
+}
+
+.voting-station-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .station-inputs {
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .station-name-input,
+  .station-votes-input {
+    width: 100%;
+  }
+}
