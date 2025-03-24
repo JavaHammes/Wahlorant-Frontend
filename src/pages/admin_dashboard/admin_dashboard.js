@@ -25,7 +25,6 @@ const AdminDashboardPage = () => {
     name: '',
     startDate: '',
     endDate: '',
-    description: ''
   });
 
   // Voting stations state
@@ -61,7 +60,6 @@ const AdminDashboardPage = () => {
         name: voting.name,
         startDate: voting.startDate,
         endDate: voting.endDate,
-        description: voting.description || 'Keine Beschreibung verfügbar',
         votingStations: voting.votingStations ? voting.votingStations.map(station => ({
           id: station.id,
           name: station.name,
@@ -142,7 +140,6 @@ const AdminDashboardPage = () => {
         name: election.name,
         startDate: new Date(election.startDate).toISOString().slice(0, 16),
         endDate: new Date(election.endDate).toISOString().slice(0, 16),
-        description: election.description || ''
       });
 
       // Set voting stations for edit mode
@@ -183,7 +180,6 @@ const AdminDashboardPage = () => {
         name: '',
         startDate: '',
         endDate: '',
-        description: ''
       });
 
       // Reset voting stations for new election
@@ -347,7 +343,6 @@ const AdminDashboardPage = () => {
       name: formData.name.trim(),
       startDate: new Date(formData.startDate).toISOString(),
       endDate: new Date(formData.endDate).toISOString(),
-      description: formData.description.trim(),
       votingstations: filteredStations,
       votetypes: filteredTypes
     };
@@ -490,7 +485,6 @@ const AdminDashboardPage = () => {
                           <span className="date-value">{formatDate(election.endDate)}</span>
                         </div>
                       </div>
-                      <p className="election-description">{election.description}</p>
 
                       <div className="election-details">
                         {election.votingStations && election.votingStations.length > 0 && (
