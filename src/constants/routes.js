@@ -4,3 +4,4 @@ export const REGISTER_ROUTE = '/registrieren';
 export const ABOUT_ROUTE = '/ueber';
 export const ADMIN_DASHBOARD_ROUTE = '/admin_dashboard';
 export const USER_DASHBOARD_ROUTE = '/dashboard';
+export const VOTING_ROUTE = '/wahlstation';

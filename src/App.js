@@ -10,6 +10,7 @@ import RegisterPage from './pages/register/register'
 import AboutPage from './pages/about/about'
 import AdminDashboardPage from './pages/admin_dashboard/admin_dashboard'
 import UserDashboardPage from './pages/user_dashboard/user_dashboard'
+import VotingStationPage from './pages/voting_station/voting_station'
 import { isAdmin, isUser, logout } from './utils/auth';
 import {
   ABOUT_ROUTE,
@@ -17,7 +18,8 @@ import {
   HOMEPAGE_ROUTE,
   LOGIN_ROUTE,
   REGISTER_ROUTE,
-  USER_DASHBOARD_ROUTE
+  USER_DASHBOARD_ROUTE,
+  VOTING_ROUTE
 } from "./constants/routes";
 
 // Protected route wrapper for admin routes
@@ -32,7 +34,6 @@ const AdminRoute = ({ children }) => {
       setIsLoading(false);
 
       if (!adminStatus) {
-        alert('Sie haben keine Berechtigung, auf das Admin-Dashboard zuzugreifen.');
         logout();
       }
     };
@@ -64,7 +65,6 @@ const UserRoute = ({ children }) => {
       setIsLoading(false);
 
       if (!userStatus) {
-        alert('Sie haben keine Berechtigung, auf dieses Dashboard zuzugreifen.');
         logout();
       }
     };
@@ -92,6 +92,7 @@ function App() {
           <Route path={HOMEPAGE_ROUTE} element={<HomePage />} />
           <Route path={LOGIN_ROUTE} element={<LoginPage />} />
           <Route path={ABOUT_ROUTE} element={<AboutPage />} />
+          <Route path={VOTING_ROUTE} element={<VotingStationPage />} />
 
           {/* Protected Admin Routes */}
           <Route
