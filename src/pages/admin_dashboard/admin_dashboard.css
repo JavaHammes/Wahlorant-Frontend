@@ -1026,3 +1026,29 @@ input:focus, textarea:focus {
 .vote-type-header input {
   flex-grow: 1;
 }
+
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  background: linear-gradient(90deg, #4da6ff, #2f8ce0);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(77, 166, 255, 0.3);
+}
+
+.refresh-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(77, 166, 255, 0.4);
+}
+
+.refresh-btn::before {
+  content: "↻";
+  margin-right: 6px;
+  font-size: 14px;
+}
