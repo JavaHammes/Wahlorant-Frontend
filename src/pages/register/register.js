@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HOMEPAGE_ROUTE, ADMIN_DASHBOARD_ROUTE } from "../../constants/routes";
 import { API_URL, CREATE_USER_ENDPOINT } from '../../constants/api';
+import userService from '../../utils/userService';
 import './register.css';
 
 const RegisterPage = () => {
@@ -28,27 +29,11 @@ const RegisterPage = () => {
     }
 
     try {
-      const url = new URL(CREATE_USER_ENDPOINT, API_URL);
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          username,
-          password,
-          role
-        })
+      await userService.registerUser({
+        username,
+        password,
+        role
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Fehler bei der Registrierung');
-      }
 
       setSuccess('Registrierung erfolgreich!');
 

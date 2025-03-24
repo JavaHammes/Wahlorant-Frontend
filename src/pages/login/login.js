@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {HOMEPAGE_ROUTE, REGISTER_ROUTE, ADMIN_DASHBOARD_ROUTE, USER_DASHBOARD_ROUTE} from "../../constants/routes";
 import { API_URL, LOGIN_ENDPOINT} from "../../constants/api";
+import userService from "../../utils/userService";
 import './login.css';
 
 const LoginPage = () => {
@@ -17,37 +18,16 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}${LOGIN_ENDPOINT}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          password
-        }),
-      });
+      const user = await userService.login(username, password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.user.token);
-
-        if (data.user && data.user.username) {
-            localStorage.setItem('username', data.user.username);
-        }
-
-        if (data.user && data.user.role === 'admin') {
-          navigate(ADMIN_DASHBOARD_ROUTE);
-        } else {
-          navigate(USER_DASHBOARD_ROUTE);
-        }
+      if (user && user.role === 'admin') {
+        navigate(ADMIN_DASHBOARD_ROUTE);
       } else {
-        setError(data.message || 'Login fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.');
+        navigate(USER_DASHBOARD_ROUTE);
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+      setError(error.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
     } finally {
       setIsLoading(false);
     }
