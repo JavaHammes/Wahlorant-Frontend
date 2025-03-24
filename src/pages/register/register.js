@@ -1,29 +1,59 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import {ADMIN_DASHBOARD_ROUTE, HOMEPAGE_ROUTE} from "../../constants/routes";
-
+import { Link, useNavigate } from 'react-router-dom';
+import { HOMEPAGE_ROUTE, ADMIN_DASHBOARD_ROUTE } from "../../constants/routes";
+import { API_URL, CREATE_USER_ENDPOINT } from '../../constants/api';
 import './register.css';
 
 const RegisterPage = () => {
-  const [stationName, setStationName] = useState('');
-  const [email, setEmail] = useState('');
-  const [street, setStreet] = useState('');
-  const [houseNumber, setHouseNumber] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [city, setCity] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('user');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Registration attempt:', {
-      stationName,
-      email,
-      address: {
-        street,
-        houseNumber,
-        postalCode,
-        city
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+
+    if (password !== confirmPassword) {
+      setError('Passwörter stimmen nicht überein');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const url = new URL(CREATE_USER_ENDPOINT, API_URL);
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          role
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Fehler bei der Registrierung');
       }
-    });
+
+      setSuccess('Registrierung erfolgreich!');
+
+    } catch (err) {
+      setError(err.message || 'Etwas ist schiefgelaufen. Bitte versuchen Sie es später noch einmal.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -43,105 +73,85 @@ const RegisterPage = () => {
         <div className="register-card">
           <div className="register-header">
             <h2>Registrieren</h2>
-            <p>Erstellen Sie ein neues Wahllokal</p>
+            <p>Erstellen Sie ein neues Konto</p>
           </div>
+
+          {error && <div className="alert alert-error">{error}</div>}
+          {success && <div className="alert alert-success">{success}</div>}
 
           <form className="register-form" onSubmit={handleSubmit}>
             <div className="form-group">
+              <label htmlFor="username">Benutzername</label>
               <div className="input-container">
                 <input
                   type="text"
-                  id="stationName"
-                  value={stationName}
-                  onChange={(e) => setStationName(e.target.value)}
-                  placeholder="Name des Wahllokals"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Ihr Benutzername"
                   required
+                  disabled={isLoading}
                 />
-                <span className="input-icon">🏢</span>
+                <span className="input-icon">👤</span>
               </div>
             </div>
 
             <div className="form-group">
+              <label htmlFor="password">Passwort</label>
               <div className="input-container">
                 <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email"
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Ihr Passwort"
                   required
+                  disabled={isLoading}
                 />
-                <span className="input-icon">✉️</span>
+                <span className="input-icon">🔒</span>
               </div>
             </div>
 
-            <div className="address-section">
-              <h3>Adresse des Wahllokals</h3>
-
-              <div className="address-row">
-                <div className="form-group street-group">
-                  <div className="input-container">
-                    <input
-                      type="text"
-                      id="street"
-                      value={street}
-                      onChange={(e) => setStreet(e.target.value)}
-                      placeholder="Straße"
-                      required
-                    />
-                    <span className="input-icon">🗺️</span>
-                  </div>
-                </div>
-
-                <div className="form-group house-number-group">
-                  <div className="input-container">
-                    <input
-                      type="text"
-                      id="houseNumber"
-                      value={houseNumber}
-                      onChange={(e) => setHouseNumber(e.target.value)}
-                      placeholder="Hausnummer"
-                      required
-                    />
-                    <span className="input-icon">🏠</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="address-row">
-                <div className="form-group postal-code-group">
-                  <div className="input-container">
-                    <input
-                      type="text"
-                      id="postalCode"
-                      value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value)}
-                      placeholder="PLZ"
-                      pattern="[0-9]{5}"
-                      maxLength="5"
-                      required
-                    />
-                    <span className="input-icon">📮</span>
-                  </div>
-                </div>
-
-                <div className="form-group city-group">
-                  <div className="input-container">
-                    <input
-                      type="text"
-                      id="city"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      placeholder="Stadt"
-                      required
-                    />
-                    <span className="input-icon">🏙️</span>
-                  </div>
-                </div>
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Passwort bestätigen</label>
+              <div className="input-container">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Passwort wiederholen"
+                  required
+                  disabled={isLoading}
+                />
+                <span className="input-icon">🔒</span>
               </div>
             </div>
 
-            <button type="submit" className="register-button">Wahllokal registrieren</button>
+            <div className="form-group">
+              <label htmlFor="role">Rolle</label>
+              <div className="input-container">
+                <select
+                  id="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  disabled={isLoading}
+                  className="role-select"
+                >
+                  <option value="user">Benutzer</option>
+                  <option value="admin">Administrator</option>
+                </select>
+                <span className="input-icon">🔑</span>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="register-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Wird verarbeitet...' : 'Registrieren'}
+            </button>
           </form>
         </div>
       </main>
