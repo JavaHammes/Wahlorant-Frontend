@@ -13,6 +13,8 @@ const AdminDashboardPage = () => {
   const [currentElection, setCurrentElection] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stationPasswords, setStationPasswords] = useState([]);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -361,7 +363,20 @@ const AdminDashboardPage = () => {
         alert('Wahl erfolgreich aktualisiert!');
       } else {
         // Create new election
-        await votingService.createVoting(submissionData);
+        const newVoting = await votingService.createVoting(submissionData);
+
+        // Extract password information from the response
+        if (newVoting && newVoting.votingstations) {
+          const passwordData = newVoting.votingstations.map(station => ({
+            name: station.name,
+            loginId: station.loginId,
+            password: station.password
+          }));
+
+          setStationPasswords(passwordData);
+          setShowPasswordModal(true);
+        }
+
         alert('Neue Wahl erfolgreich erstellt!');
       }
 
@@ -374,6 +389,11 @@ const AdminDashboardPage = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const closePasswordModal = () => {
+    setShowPasswordModal(false);
+    setStationPasswords([]);
   };
 
   const handleDeleteElection = async (id) => {
@@ -528,6 +548,66 @@ const AdminDashboardPage = () => {
         )}
       </main>
 
+
+      {showPasswordModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h3>Zugangsdaten für Wahllokale</h3>
+              <button className="close-modal" onClick={closePasswordModal}>×</button>
+            </div>
+            <div className="election-form">
+              <div className="password-info-note">
+                <p><strong>Wichtig:</strong> Bitte notieren Sie diese Zugangsdaten. Sie werden nur einmal angezeigt! (DEV)</p>
+              </div>
+
+              <div className="password-list">
+                {stationPasswords.map((station, index) => (
+                  <div key={index} className="password-item">
+                    <h4>{station.name}</h4>
+                    <div className="password-details">
+                      <div className="password-row">
+                        <span className="password-label">Login-ID:</span>
+                        <span className="password-value">{station.loginId}</span>
+                        <button
+                          className="copy-btn"
+                          onClick={() => navigator.clipboard.writeText(station.loginId)}
+                          title="In die Zwischenablage kopieren"
+                        >
+                          📋
+                        </button>
+                      </div>
+                      <div className="password-row">
+                        <span className="password-label">Passwort:</span>
+                        <span className="password-value">{station.password}</span>
+                        <button
+                          className="copy-btn"
+                          onClick={() => navigator.clipboard.writeText(station.password)}
+                          title="In die Zwischenablage kopieren"
+                        >
+                          📋
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="submit-btn"
+                  onClick={closePasswordModal}
+                >
+                  Schließen
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -640,7 +720,7 @@ const AdminDashboardPage = () => {
                       <div className="vote-type-header">
                         <input
                           type="text"
-                          placeholder="Name des Wahltyps (z.B. Präsidentschaftswahl)"
+                          placeholder="Name des Wahltyps (z.B. Erststimme)"
                           value={voteType.name}
                           onChange={(e) => handleVoteTypeChange(voteType.id, 'name', e.target.value)}
                           className="vote-type-input"

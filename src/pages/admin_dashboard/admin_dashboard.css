@@ -1052,3 +1052,133 @@ input:focus, textarea:focus {
   margin-right: 6px;
   font-size: 14px;
 }
+
+/* Password Modal Styles */
+.password-info-note {
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+.password-info-note p {
+  color: #ffc107;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.password-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.password-item {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+.password-item h4 {
+  margin: 0 0 12px 0;
+  color: #4da6ff;
+  border-bottom: 1px solid #333;
+  padding-bottom: 8px;
+}
+
+.password-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.password-row {
+  display: flex;
+  align-items: center;
+}
+
+.password-label {
+  width: 90px;
+  color: #a0a0a0;
+  font-size: 0.9rem;
+}
+
+.password-value {
+  font-family: monospace;
+  background-color: #252525;
+  padding: 6px 12px;
+  border-radius: 4px;
+  color: #e0e0e0;
+  flex-grow: 1;
+  border: 1px solid #444;
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.copy-btn {
+  background-color: transparent;
+  border: none;
+  color: #4da6ff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-left: 10px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background-color: rgba(77, 166, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.password-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.password-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.password-list::-webkit-scrollbar-thumb {
+  background: rgba(77, 166, 255, 0.3);
+  border-radius: 4px;
+}
+
+.password-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 166, 255, 0.5);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .password-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .password-label {
+    width: 100%;
+  }
+
+  .copy-btn {
+    margin-left: auto;
+  }
+}
