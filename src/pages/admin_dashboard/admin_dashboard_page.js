@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HOMEPAGE_ROUTE, REGISTER_ROUTE } from '../../constants/routes';
+import { HOMEPAGE_ROUTE, REGISTER_ROUTE, LOGIN_ROUTE} from '../../constants/routes';
+import { isAdmin, logout } from '../../utils/auth';
 import './admin_dashboard.css';
 
 const AdminDashboardPage = () => {
@@ -9,6 +10,7 @@ const AdminDashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentElection, setCurrentElection] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     startDate: '',
@@ -22,18 +24,28 @@ const AdminDashboardPage = () => {
   ]);
 
   useEffect(() => {
-    // TODO Replace with actual Authentication
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const checkAdminAccess = async () => {
+      setIsLoading(true);
+      const adminStatus = await isAdmin();
 
-    if (!isAuthenticated) {
-      localStorage.setItem('isAuthenticated', 'true');
+      if (!adminStatus) {
+        // Redirect non-admin users to login
+        alert('Sie haben keine Berechtigung, auf das Admin-Dashboard zuzugreifen.');
+        logout(); // Clear any existing tokens
+        navigate(LOGIN_ROUTE);
+        return;
+      }
 
-      //Redirect to Login
-    }
+      // If admin, load elections data
+      loadElectionsData();
+      setIsLoading(false);
+    };
+
+    checkAdminAccess();
   }, [navigate]);
 
-  useEffect(() => {
-    // TODO Add API With actual Data
+  const loadElectionsData = () => {
+    // TODO: Replace with actual API call
     const sampleElections = [
       {
         id: 1,
@@ -66,7 +78,7 @@ const AdminDashboardPage = () => {
     ];
 
     setElections(sampleElections);
-  }, []);
+  };
 
   const checkElectionStatus = (startDate, endDate) => {
     const now = new Date();
@@ -90,7 +102,7 @@ const AdminDashboardPage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    logout();
     navigate(HOMEPAGE_ROUTE);
   };
 
@@ -199,6 +211,15 @@ const AdminDashboardPage = () => {
       setElections(updatedElections);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Lade Admin-Dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-dashboard">

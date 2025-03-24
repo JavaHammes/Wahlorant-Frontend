@@ -29,10 +29,13 @@ const RegisterPage = () => {
 
     try {
       const url = new URL(CREATE_USER_ENDPOINT, API_URL);
+      const token = localStorage.getItem('token');
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           username,
@@ -48,6 +51,11 @@ const RegisterPage = () => {
       }
 
       setSuccess('Registrierung erfolgreich!');
+
+      setUsername('');
+      setPassword('');
+      setConfirmPassword('');
+      setRole('user');
 
     } catch (err) {
       setError(err.message || 'Etwas ist schiefgelaufen. Bitte versuchen Sie es später noch einmal.');
