@@ -9,8 +9,6 @@ import { API_URL, USER_ENDPOINT } from '../constants/api';
 export const isAdmin = async () => {
   const token = localStorage.getItem('token');
 
-  console.log(token)
-
   if (!token) {
     return false;
   }

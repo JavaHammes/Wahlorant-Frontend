@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HOMEPAGE_ROUTE, REGISTER_ROUTE } from '../../constants/routes';
 import { logout } from '../../utils/auth';
+import votingService from '../../utils/votingService';
 import './admin_dashboard.css';
 
 const AdminDashboardPage = () => {
@@ -10,6 +11,16 @@ const AdminDashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentElection, setCurrentElection] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    upcoming: 0,
+    completed: 0
+  });
+
+  // Form data state
   const [formData, setFormData] = useState({
     name: '',
     startDate: '',
@@ -17,51 +28,85 @@ const AdminDashboardPage = () => {
     description: ''
   });
 
-  // State for voting stations
+  // Voting stations state
   const [votingStations, setVotingStations] = useState([
-    { id: 1, name: '', votes: '' }
+    { id: 1, name: '', voterCount: 0 }
+  ]);
+
+  // Vote types state
+  const [voteTypes, setVoteTypes] = useState([
+    {
+      id: 1,
+      name: '',
+      voteoptions: [
+        { id: 1, name: '' }
+      ]
+    }
   ]);
 
   // Load data when component mounts
   useEffect(() => {
-    loadElectionsData();
+    loadDashboardData();
   }, []);
 
-  const loadElectionsData = () => {
-    // TODO: Replace with actual API call
-    const sampleElections = [
-      {
-        id: 1,
-        name: 'Bundestagswahl 2025',
-        startDate: '2025-09-01T08:00:00',
-        endDate: '2025-09-01T18:00:00',
-        description: 'Bundesweite Wahl für die Zusammensetzung des deutschen Bundestags'
-      },
-      {
-        id: 2,
-        name: 'Kommunalwahl München',
-        startDate: '2025-03-15T08:00:00',
-        endDate: '2025-03-15T18:00:00',
-        description: 'Wahl des Stadtrats und der Bezirksausschüsse in München'
-      },
-      {
-        id: 3,
-        name: 'Landtagswahl Bayern',
-        startDate: '2024-10-10T08:00:00',
-        endDate: '2024-10-10T18:00:00',
-        description: 'Wahl des Bayerischen Landtags'
-      },
-      {
-        id: 4,
-        name: 'Europawahl 2024',
-        startDate: '2024-06-09T08:00:00',
-        endDate: '2024-06-09T20:00:00',
-        description: 'Wahl der Abgeordneten für das Europäische Parlament'
-      }
-    ];
+  async function loadDashboardData() {
+    setIsLoading(true);
+    try {
+      // Get all votings from the API
+      const allVotings = await votingService.getAllVotings();
 
-    setElections(sampleElections);
-  };
+      // Transform API data to match our component's expected format
+      const transformedElections = allVotings.map(voting => ({
+        id: voting.id,
+        name: voting.name,
+        startDate: voting.startDate,
+        endDate: voting.endDate,
+        description: voting.description || 'Keine Beschreibung verfügbar',
+        votingStations: voting.votingStations ? voting.votingStations.map(station => ({
+          id: station.id,
+          name: station.name,
+          voterCount: station.voterCount || 0
+        })) : [],
+        voteTypes: voting.votetypes ? voting.votetypes.map(type => ({
+          id: type.id,
+          name: type.name,
+          voteoptions: type.voteoptions ? type.voteoptions.map((option, idx) => ({
+            id: idx + 1,
+            name: typeof option === 'string' ? option : option.name
+          })) : []
+        })) : []
+      }));
+
+      setElections(transformedElections);
+
+      // Calculate statistics
+      const now = new Date();
+      const statsData = {
+        total: transformedElections.length,
+        active: transformedElections.filter(e => {
+          const start = new Date(e.startDate);
+          const end = new Date(e.endDate);
+          return now >= start && now <= end;
+        }).length,
+        upcoming: transformedElections.filter(e => {
+          const start = new Date(e.startDate);
+          return now < start;
+        }).length,
+        completed: transformedElections.filter(e => {
+          const end = new Date(e.endDate);
+          return now > end;
+        }).length
+      };
+
+      setStats(statsData);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      // Show error message to user
+      alert('Fehler beim Laden der Wahldaten. Bitte versuchen Sie es später erneut.');
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const checkElectionStatus = (startDate, endDate) => {
     const now = new Date();
@@ -97,12 +142,41 @@ const AdminDashboardPage = () => {
         name: election.name,
         startDate: new Date(election.startDate).toISOString().slice(0, 16),
         endDate: new Date(election.endDate).toISOString().slice(0, 16),
-        description: election.description
+        description: election.description || ''
       });
 
-      // Reset voting stations for edit mode
-      setVotingStations(election.votingStations || [{ id: 1, name: '', votes: '' }]);
+      // Set voting stations for edit mode
+      setVotingStations(
+        election.votingStations && election.votingStations.length > 0
+          ? election.votingStations.map(station => ({
+              id: station.id,
+              name: station.name,
+              voterCount: station.voterCount || 0
+            }))
+          : [{ id: 1, name: '', voterCount: 0 }]
+      );
+
+      // Set vote types for edit mode
+      setVoteTypes(
+        election.voteTypes && election.voteTypes.length > 0
+          ? election.voteTypes.map(type => ({
+              id: type.id,
+              name: type.name,
+              voteoptions: type.voteoptions && type.voteoptions.length > 0
+                ? type.voteoptions.map(option => ({
+                    id: typeof option === 'object' ? option.id : Math.random().toString(36).substr(2, 9),
+                    name: typeof option === 'object' ? option.name : option
+                  }))
+                : [{ id: 1, name: '' }]
+            }))
+          : [{
+              id: 1,
+              name: '',
+              voteoptions: [{ id: 1, name: '' }]
+            }]
+      );
     } else {
+      // Reset all form data for new election
       setIsEditMode(false);
       setCurrentElection(null);
       setFormData({
@@ -113,7 +187,14 @@ const AdminDashboardPage = () => {
       });
 
       // Reset voting stations for new election
-      setVotingStations([{ id: 1, name: '', votes: '' }]);
+      setVotingStations([{ id: 1, name: '', voterCount: 0 }]);
+
+      // Reset vote types for new election
+      setVoteTypes([{
+        id: 1,
+        name: '',
+        voteoptions: [{ id: 1, name: '' }]
+      }]);
     }
     setIsModalOpen(true);
   };
@@ -133,7 +214,7 @@ const AdminDashboardPage = () => {
   // Handle changes in voting station inputs
   const handleStationChange = (id, field, value) => {
     const updatedStations = votingStations.map(station =>
-      station.id === id ? { ...station, [field]: value } : station
+      station.id === id ? { ...station, [field]: field === 'voterCount' ? Number(value) : value } : station
     );
     setVotingStations(updatedStations);
   };
@@ -141,12 +222,12 @@ const AdminDashboardPage = () => {
   // Add a new voting station
   const addVotingStation = () => {
     const newId = votingStations.length > 0
-      ? Math.max(...votingStations.map(s => s.id)) + 1
+      ? Math.max(...votingStations.map(s => Number(s.id))) + 1
       : 1;
 
     setVotingStations([
       ...votingStations,
-      { id: newId, name: '', votes: '' }
+      { id: newId, name: '', voterCount: 0 }
     ]);
   };
 
@@ -157,42 +238,170 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Vote Type Functions
+  // Add a new vote type
+  const addVoteType = () => {
+    const newId = voteTypes.length > 0
+      ? Math.max(...voteTypes.map(t => Number(t.id))) + 1
+      : 1;
 
-    // Filter out empty voting stations
-    const filteredStations = votingStations.filter(station => station.name.trim() !== '');
-
-    if (isEditMode && currentElection) {
-      // Update existing election
-      const updatedElections = elections.map(election =>
-        election.id === currentElection.id
-          ? {
-              ...election,
-              ...formData,
-              votingStations: filteredStations
-            }
-          : election
-      );
-      setElections(updatedElections);
-    } else {
-      // Add new election
-      const newElection = {
-        id: Date.now(), // simple id generation for demo
-        ...formData,
-        votingStations: filteredStations
-      };
-      setElections([...elections, newElection]);
-    }
-
-    closeModal();
+    setVoteTypes([
+      ...voteTypes,
+      {
+        id: newId,
+        name: '',
+        voteoptions: [{ id: 1, name: '' }]
+      }
+    ]);
   };
 
-  const handleDeleteElection = (id) => {
-    if (window.confirm('Sind Sie sicher, dass Sie diese Wahl löschen möchten?')) {
-      const updatedElections = elections.filter(election => election.id !== id);
-      setElections(updatedElections);
+  // Remove a vote type
+  const removeVoteType = (id) => {
+    if (voteTypes.length > 1) {
+      setVoteTypes(voteTypes.filter(type => type.id !== id));
     }
+  };
+
+  // Handle changes in vote type name
+  const handleVoteTypeChange = (id, field, value) => {
+    const updatedTypes = voteTypes.map(type =>
+      type.id === id ? { ...type, [field]: value } : type
+    );
+    setVoteTypes(updatedTypes);
+  };
+
+  // Vote Option Functions
+  // Add a new vote option to a specific vote type
+  const addVoteOption = (typeId) => {
+    const updatedTypes = voteTypes.map(type => {
+      if (type.id === typeId) {
+        const newId = type.voteoptions.length > 0
+          ? Math.max(...type.voteoptions.map(o => Number(o.id))) + 1
+          : 1;
+
+        return {
+          ...type,
+          voteoptions: [...type.voteoptions, { id: newId, name: '' }]
+        };
+      }
+      return type;
+    });
+
+    setVoteTypes(updatedTypes);
+  };
+
+  // Remove a vote option from a specific vote type
+  const removeVoteOption = (typeId, optionId) => {
+    const updatedTypes = voteTypes.map(type => {
+      if (type.id === typeId && type.voteoptions.length > 1) {
+        return {
+          ...type,
+          voteoptions: type.voteoptions.filter(option => option.id !== optionId)
+        };
+      }
+      return type;
+    });
+
+    setVoteTypes(updatedTypes);
+  };
+
+  // Handle changes in vote option name
+  const handleVoteOptionChange = (typeId, optionId, value) => {
+    const updatedTypes = voteTypes.map(type => {
+      if (type.id === typeId) {
+        return {
+          ...type,
+          voteoptions: type.voteoptions.map(option =>
+            option.id === optionId ? { ...option, name: value } : option
+          )
+        };
+      }
+      return type;
+    });
+
+    setVoteTypes(updatedTypes);
+  };
+
+  // Prepare data for API submission
+  const prepareSubmissionData = () => {
+    // Filter out empty voting stations
+    const filteredStations = votingStations
+      .filter(station => station.name.trim() !== '')
+      .map(station => ({
+        name: station.name.trim(),
+        voterCount: Number(station.voterCount)
+      }));
+
+    // Filter out empty vote types and options
+    const filteredTypes = voteTypes
+      .filter(type => type.name.trim() !== '')
+      .map(type => ({
+        name: type.name.trim(),
+        voteoptions: type.voteoptions
+          .filter(option => option.name.trim() !== '')
+          .map(option => option.name.trim())
+      }))
+      .filter(type => type.voteoptions.length > 0);
+
+    return {
+      name: formData.name.trim(),
+      startDate: new Date(formData.startDate).toISOString(),
+      endDate: new Date(formData.endDate).toISOString(),
+      description: formData.description.trim(),
+      votingstations: filteredStations,
+      votetypes: filteredTypes
+    };
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const submissionData = prepareSubmissionData();
+
+      if (isEditMode && currentElection) {
+        // Update existing election
+        await votingService.updateVoting(currentElection.id, submissionData);
+        alert('Wahl erfolgreich aktualisiert!');
+      } else {
+        // Create new election
+        await votingService.createVoting(submissionData);
+        alert('Neue Wahl erfolgreich erstellt!');
+      }
+
+      // Reload dashboard data to show the updated list
+      await loadDashboardData();
+      closeModal();
+    } catch (error) {
+      console.error('Error submitting election data:', error);
+      alert(`Fehler beim ${isEditMode ? 'Aktualisieren' : 'Erstellen'} der Wahl: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteElection = async (id) => {
+    if (window.confirm('Sind Sie sicher, dass Sie diese Wahl löschen möchten?')) {
+      try {
+        await votingService.deleteVoting(id);
+        // Remove from local state
+        setElections(elections.filter(election => election.id !== id));
+        // Update stats
+        setStats({
+          ...stats,
+          total: stats.total - 1
+        });
+        alert('Wahl erfolgreich gelöscht!');
+      } catch (error) {
+        console.error('Error deleting election:', error);
+        alert(`Fehler beim Löschen der Wahl: ${error.message}`);
+      }
+    }
+  };
+
+  const refreshData = () => {
+    loadDashboardData();
   };
 
   return (
@@ -207,6 +416,7 @@ const AdminDashboardPage = () => {
           <span className="admin-greeting">Willkommen, Administrator</span>
         </div>
         <div className="admin-actions">
+          <button className="refresh-btn" onClick={refreshData}>Aktualisieren</button>
           <button className="logout-btn" onClick={handleLogout}>Abmelden</button>
         </div>
       </header>
@@ -219,92 +429,109 @@ const AdminDashboardPage = () => {
               <span className="icon">📊</span> Neue Wahl erstellen
             </button>
             <button className="create-btn" onClick={() => navigate(REGISTER_ROUTE)}>
-              <span className="icon">👤</span> Neues Wahllokal anlegen
+              <span className="icon">👤</span> Neuen Benutzer anlegen
             </button>
           </div>
         </div>
 
-        <div className="elections-container">
-          <div className="elections-stats">
-            <div className="stat-card">
-              <div className="stat-value">{elections.length}</div>
-              <div className="stat-label">Gesamte Wahlen</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">
-                {elections.filter(e => checkElectionStatus(e.startDate, e.endDate) === 'active').length}
+        {isLoading ? (
+          <div className="loading-indicator">Daten werden geladen...</div>
+        ) : (
+          <div className="elections-container">
+            <div className="elections-stats">
+              <div className="stat-card">
+                <div className="stat-value">{stats.total}</div>
+                <div className="stat-label">Gesamte Wahlen</div>
               </div>
-              <div className="stat-label">Aktive Wahlen</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">
-                {elections.filter(e => checkElectionStatus(e.startDate, e.endDate) === 'upcoming').length}
+              <div className="stat-card">
+                <div className="stat-value">{stats.active}</div>
+                <div className="stat-label">Aktive Wahlen</div>
               </div>
-              <div className="stat-label">Kommende Wahlen</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">
-                {elections.filter(e => checkElectionStatus(e.startDate, e.endDate) === 'completed').length}
+              <div className="stat-card">
+                <div className="stat-value">{stats.upcoming}</div>
+                <div className="stat-label">Kommende Wahlen</div>
               </div>
-              <div className="stat-label">Abgeschlossene</div>
+              <div className="stat-card">
+                <div className="stat-value">{stats.completed}</div>
+                <div className="stat-label">Abgeschlossene</div>
+              </div>
             </div>
-          </div>
 
-          <h3 className="section-title">Alle Wahlen</h3>
+            <h3 className="section-title">Alle Wahlen</h3>
 
-          <div className="elections-grid">
-            {elections.map(election => {
-              const status = checkElectionStatus(election.startDate, election.endDate);
-              return (
-                <div
-                  key={election.id}
-                  className={`election-card ${status}`}
-                >
-                  <div className="election-header">
-                    <h4 className="election-name">{election.name}</h4>
-                    <div className={`status-badge ${status}`}>
-                      {status === 'active' && 'Aktiv'}
-                      {status === 'upcoming' && 'Geplant'}
-                      {status === 'completed' && 'Beendet'}
-                    </div>
-                  </div>
-                  <div className="election-dates">
-                    <div className="date-group">
-                      <span className="date-label">Start:</span>
-                      <span className="date-value">{formatDate(election.startDate)}</span>
-                    </div>
-                    <div className="date-group">
-                      <span className="date-label">Ende:</span>
-                      <span className="date-value">{formatDate(election.endDate)}</span>
-                    </div>
-                  </div>
-                  <p className="election-description">{election.description}</p>
-                  {election.votingStations && election.votingStations.length > 0 && (
-                    <div className="voting-stations-summary">
-                      <span className="stations-count">{election.votingStations.length} Wahllokale</span>
-                    </div>
-                  )}
-                  <div className="election-actions">
-                    <button
-                      className="view-results-btn"
-                      onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
+            {elections.length === 0 ? (
+              <div className="no-elections-message">
+                <p>Keine Wahlen vorhanden. Erstellen Sie eine neue Wahl, um loszulegen.</p>
+              </div>
+            ) : (
+              <div className="elections-grid">
+                {elections.map(election => {
+                  const status = checkElectionStatus(election.startDate, election.endDate);
+                  return (
+                    <div
+                      key={election.id}
+                      className={`election-card ${status}`}
                     >
-                      Ergebnisse anzeigen
-                    </button>
-                    <div className="action-buttons">
-                      <button className="edit-btn" onClick={() => openModal(true, election)}>
-                        ✏️
-                      </button>
-                      <button className="delete-btn" onClick={() => handleDeleteElection(election.id)}>
-                        🗑️
-                      </button>
+                      <div className="election-header">
+                        <h4 className="election-name">{election.name}</h4>
+                        <div className={`status-badge ${status}`}>
+                          {status === 'active' && 'Aktiv'}
+                          {status === 'upcoming' && 'Geplant'}
+                          {status === 'completed' && 'Beendet'}
+                        </div>
+                      </div>
+                      <div className="election-dates">
+                        <div className="date-group">
+                          <span className="date-label">Start:</span>
+                          <span className="date-value">{formatDate(election.startDate)}</span>
+                        </div>
+                        <div className="date-group">
+                          <span className="date-label">Ende:</span>
+                          <span className="date-value">{formatDate(election.endDate)}</span>
+                        </div>
+                      </div>
+                      <p className="election-description">{election.description}</p>
+
+                      <div className="election-details">
+                        {election.votingStations && election.votingStations.length > 0 && (
+                          <div className="voting-stations-summary">
+                            <span className="stations-count">{election.votingStations.length} Wahllokale</span>
+                            <span className="votes-count">
+                              {election.votingStations.reduce((total, station) => total + Number(station.voterCount || 0), 0)} Stimmen
+                            </span>
+                          </div>
+                        )}
+
+                        {election.voteTypes && election.voteTypes.length > 0 && (
+                          <div className="vote-types-summary">
+                            <span className="types-count">{election.voteTypes.length} Wahltypen</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="election-actions">
+                        <button
+                          className="view-results-btn"
+                          onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
+                        >
+                          Ergebnisse anzeigen
+                        </button>
+                        <div className="action-buttons">
+                          <button className="edit-btn" onClick={() => openModal(true, election)}>
+                            ✏️
+                          </button>
+                          <button className="delete-btn" onClick={() => handleDeleteElection(election.id)}>
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </main>
 
       {isModalOpen && (
@@ -351,18 +578,6 @@ const AdminDashboardPage = () => {
                   />
                 </div>
               </div>
-              <div className="form-group">
-                <label htmlFor="description">Beschreibung</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Kurze Beschreibung der Wahl"
-                  rows="3"
-                  required
-                ></textarea>
-              </div>
 
               {/* Voting Stations Section */}
               <div className="voting-stations-section">
@@ -390,9 +605,9 @@ const AdminDashboardPage = () => {
                         />
                         <input
                           type="number"
-                          placeholder="Stimmen"
-                          value={station.votes}
-                          onChange={(e) => handleStationChange(station.id, 'votes', e.target.value)}
+                          placeholder="Anzahl der Wähler"
+                          value={station.voterCount}
+                          onChange={(e) => handleStationChange(station.id, 'voterCount', e.target.value)}
                           min="0"
                           className="station-votes-input"
                         />
@@ -412,10 +627,91 @@ const AdminDashboardPage = () => {
                 </div>
               </div>
 
+              {/* Vote Types Section */}
+              <div className="vote-types-section">
+                <div className="section-header">
+                  <h4>Wahltypen</h4>
+                  <button
+                    type="button"
+                    onClick={addVoteType}
+                    className="add-type-btn"
+                  >
+                    + Wahltyp hinzufügen
+                  </button>
+                </div>
+
+                <div className="vote-types-list">
+                  {voteTypes.map((voteType) => (
+                    <div key={voteType.id} className="vote-type-item">
+                      <div className="vote-type-header">
+                        <input
+                          type="text"
+                          placeholder="Name des Wahltyps (z.B. Präsidentschaftswahl)"
+                          value={voteType.name}
+                          onChange={(e) => handleVoteTypeChange(voteType.id, 'name', e.target.value)}
+                          className="vote-type-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeVoteType(voteType.id)}
+                          className="remove-type-btn"
+                          title="Wahltyp entfernen"
+                          disabled={voteTypes.length <= 1}
+                        >
+                          ×
+                        </button>
+                      </div>
+
+                      <div className="vote-options-container">
+                        <div className="vote-options-header">
+                          <h5>Wahloptionen</h5>
+                          <button
+                            type="button"
+                            onClick={() => addVoteOption(voteType.id)}
+                            className="add-option-btn"
+                          >
+                            + Option
+                          </button>
+                        </div>
+
+                        <div className="vote-options-list">
+                          {voteType.voteoptions.map((option) => (
+                            <div key={option.id} className="vote-option-item">
+                              <input
+                                type="text"
+                                placeholder="Name der Option (z.B. Kandidat A)"
+                                value={option.name}
+                                onChange={(e) => handleVoteOptionChange(voteType.id, option.id, e.target.value)}
+                                className="vote-option-input"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeVoteOption(voteType.id, option.id)}
+                                className="remove-option-btn"
+                                title="Option entfernen"
+                                disabled={voteType.voteoptions.length <= 1}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="form-actions">
                 <button type="button" className="cancel-btn" onClick={closeModal}>Abbrechen</button>
-                <button type="submit" className="submit-btn">
-                  {isEditMode ? 'Aktualisieren' : 'Erstellen'}
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? 'Wird gespeichert...'
+                    : (isEditMode ? 'Aktualisieren' : 'Erstellen')}
                 </button>
               </div>
             </form>

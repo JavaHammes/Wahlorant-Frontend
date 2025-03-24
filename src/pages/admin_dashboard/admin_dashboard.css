@@ -380,6 +380,7 @@
   z-index: 1000;
   backdrop-filter: blur(5px);
   padding: 20px;
+  overflow-y: auto;
 }
 
 .modal-content {
@@ -388,6 +389,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 600px;
+  max-height: 85vh;
   overflow: hidden;
   animation: modalFadeIn 0.3s ease-out;
 }
@@ -420,9 +422,50 @@
   color: #ff4b4b;
 }
 
+/* Style the scrollbar for the election form */
+.election-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.election-form::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.election-form::-webkit-scrollbar-thumb {
+  background: rgba(77, 166, 255, 0.3);
+  border-radius: 4px;
+}
+
+.election-form::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 166, 255, 0.5);
+}
+
+/* Style the scrollbar for the modal overlay (in case it needs to scroll) */
+.modal-overlay::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-overlay::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.modal-overlay::-webkit-scrollbar-thumb {
+  background: rgba(77, 166, 255, 0.3);
+  border-radius: 4px;
+}
+
+.modal-overlay::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 166, 255, 0.5);
+}
+
 /* Form Styles */
 .election-form {
+  overflow-y: auto;
+  max-height: calc(85vh - 70px - 70px);
   padding: 20px;
+  padding-bottom: 80px;
 }
 
 .form-group {
@@ -747,6 +790,24 @@ input:focus, textarea:focus {
   text-align: right;
 }
 
+.voting-stations-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.voting-stations-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.voting-stations-list::-webkit-scrollbar-thumb {
+  background: rgba(77, 166, 255, 0.3);
+  border-radius: 4px;
+}
+
+.voting-stations-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 166, 255, 0.5);
+}
+
 .station-name-input:focus,
 .station-votes-input:focus {
   outline: none;
@@ -821,4 +882,147 @@ input:focus, textarea:focus {
   .station-votes-input {
     width: 100%;
   }
+}
+
+/* Vote Types Section with Black Fields */
+.vote-types-section {
+  background-color: rgba(77, 166, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(77, 166, 255, 0.1);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.vote-types-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.vote-type-item {
+  background-color: #1e1e1e;
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid #333;
+  transition: all 0.3s ease;
+}
+
+.vote-type-item:hover {
+  border-color: #4da6ff;
+}
+
+/* Style the vote options container */
+.vote-options-container {
+  margin-top: 12px;
+  background-color: rgba(77, 166, 255, 0.05);
+  border-radius: 6px;
+  padding: 12px;
+  border: 1px solid rgba(77, 166, 255, 0.1);
+}
+
+.vote-options-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vote-options-header h5 {
+  margin: 0;
+  color: #b0b0b0;
+}
+
+.vote-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vote-option-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Input styling - make black to match voting stations */
+.vote-type-input, .vote-option-input {
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #e0e0e0;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.vote-type-input:focus, .vote-option-input:focus {
+  border-color: #4da6ff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(77, 166, 255, 0.2);
+}
+
+/* Button styling */
+.add-type-btn, .add-option-btn {
+  background-color: transparent;
+  color: #4da6ff;
+  border: 1px solid #4da6ff;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.add-type-btn:hover, .add-option-btn:hover {
+  background-color: rgba(77, 166, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.remove-type-btn, .remove-option-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 75, 75, 0.1);
+  color: #ff4b4b;
+  border: 1px solid rgba(255, 75, 75, 0.2);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.remove-type-btn:hover, .remove-option-btn:hover {
+  background-color: rgba(255, 75, 75, 0.2);
+  transform: scale(1.1);
+}
+
+/* Add a nice scrollbar */
+.vote-types-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vote-types-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.vote-types-list::-webkit-scrollbar-thumb {
+  background: rgba(77, 166, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* Vote type header with flex layout */
+.vote-type-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.vote-type-header input {
+  flex-grow: 1;
 }
