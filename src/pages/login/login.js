@@ -120,10 +120,6 @@ const LoginPage = () => {
               {isLoading ? 'Anmeldung...' : 'Anmelden'}
             </button>
           </form>
-
-          <div className="signup-prompt">
-            <p>Noch kein Konto? <Link to={REGISTER_ROUTE} className="signup-link">Registrieren</Link></p>
-          </div>
         </div>
       </main>
 
