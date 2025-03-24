@@ -47,7 +47,7 @@ export const isUser = async () => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/user`, {
+    const response = await fetch(`${API_URL}${USER_ENDPOINT}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -59,7 +59,8 @@ export const isUser = async () => {
     }
 
     const data = await response.json();
-    return data.user && data.user.role === 'user';
+    // Check that user exists and role is NOT admin
+    return data.user && data.user.role !== 'admin';
   } catch (error) {
     console.error('User check failed:', error);
     return false;

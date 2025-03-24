@@ -7,7 +7,7 @@ import HomePage from './pages/homepage/homepage';
 import LoginPage from './pages/login/login';
 import RegisterPage from './pages/register/register'
 import AboutPage from './pages/about/about'
-import AdminDashboardPage from './pages/admin_dashboard/admin_dashboard_page'
+import AdminDashboardPage from './pages/admin_dashboard/admin_dashboard'
 import UserDashboardPage from './pages/user_dashboard/user_dashboard'
 import {
   ABOUT_ROUTE,

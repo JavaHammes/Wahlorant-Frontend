@@ -8,7 +8,7 @@ const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState('user');
+  const [role, setRole] = useState('member');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -55,7 +55,7 @@ const RegisterPage = () => {
       setUsername('');
       setPassword('');
       setConfirmPassword('');
-      setRole('user');
+      setRole('member');
 
     } catch (err) {
       setError(err.message || 'Etwas ist schiefgelaufen. Bitte versuchen Sie es später noch einmal.');
@@ -146,7 +146,8 @@ const RegisterPage = () => {
                   disabled={isLoading}
                   className="role-select"
                 >
-                  <option value="user">Benutzer</option>
+                  <option value="member">Mitglied</option>
+                  <option value="watcher">Aufsicht</option>
                   <option value="admin">Administrator</option>
                 </select>
                 <span className="input-icon">🔑</span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HOMEPAGE_ROUTE } from '../../constants/routes';
+import { HOMEPAGE_ROUTE, LOGIN_ROUTE } from '../../constants/routes';
+import { isUser, logout } from '../../utils/auth';
 import './user_dashboard.css';
 
 const UserDashboardPage = () => {
@@ -10,20 +11,32 @@ const UserDashboardPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentVoting, setCurrentVoting] = useState(null);
   const [voteResults, setVoteResults] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   const [userSubmissions, setUserSubmissions] = useState([]);
   const TimeToEdit = 30;
 
   useEffect(() => {
-    // TODO Replace with actual Authentication
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    const checkUserAccess = async () => {
+      setIsLoading(true);
+      const userStatus = await isUser();
 
-    if (!isAuthenticated) {
-      localStorage.setItem('isAuthenticated', 'true');
-      // In actual implementation, redirect to login
-    }
+      if (!userStatus) {
+        // Redirect non-users to login
+        alert('Sie haben keine Berechtigung, auf das User-Dashboard zuzugreifen.');
+        logout(); // Clear any existing tokens
+        navigate(LOGIN_ROUTE);
+        return;
+      }
+
+      // If user, load elections data
+      loadVotingsData();
+      setIsLoading(false); // Set loading to false after data is loaded
+    };
+
+    checkUserAccess();
   }, [navigate]);
 
-  useEffect(() => {
+  const loadVotingsData = () => {
     // Sample data - would be fetched from an API in production
     const sampleVotings = [
       {
@@ -82,7 +95,7 @@ const UserDashboardPage = () => {
 
     setVotings(sampleVotings);
     setUserSubmissions(sampleSubmissions);
-  }, []);
+  };
 
   const checkVotingStatus = (startDate, endDate) => {
     const now = new Date();
@@ -117,7 +130,7 @@ const UserDashboardPage = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
+    logout();
     navigate(HOMEPAGE_ROUTE);
   };
 
@@ -252,6 +265,15 @@ const UserDashboardPage = () => {
     if (!voteCount) return 0;
     return Object.values(voteCount).reduce((sum, count) => sum + count, 0);
   };
+
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Lade Benutzer-Dashboard...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="user-dashboard">
