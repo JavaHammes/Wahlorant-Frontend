@@ -11,7 +11,7 @@ import AboutPage from './pages/about/about'
 import AdminDashboardPage from './pages/admin_dashboard/admin_dashboard'
 import UserDashboardPage from './pages/user_dashboard/user_dashboard'
 import VotingStationPage from './pages/voting_station/voting_station'
-import { isAdmin, isUser, logout } from './utils/auth';
+import { isAdmin, isUser, logout } from './requests/authService';
 import {
   ABOUT_ROUTE,
   ADMIN_DASHBOARD_ROUTE,

@@ -1,4 +1,4 @@
-// src/utils/auth.js
+// src/requests/authService.js
 
 import { API_URL, USER_ENDPOINT } from '../constants/api';
 

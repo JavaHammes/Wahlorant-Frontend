@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { HOMEPAGE_ROUTE, ADMIN_DASHBOARD_ROUTE } from "../../constants/routes";
 import { API_URL, CREATE_USER_ENDPOINT } from '../../constants/api';
-import userService from '../../utils/userService';
+import userService from '../../requests/userService';
 import './register.css';
 
 const RegisterPage = () => {
