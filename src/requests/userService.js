@@ -1,21 +1,4 @@
-import { API_URL, LOGIN_ENDPOINT, USER_ENDPOINT, CREATE_USER_ENDPOINT } from '../constants/api';
-
-/**
- * Helper function to get authentication headers
- * @returns {Object} Headers object with Authorization token
- */
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-
-  if (!token) {
-    throw new Error('No authentication token found. Please log in again.');
-  }
-
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  };
-};
+import { API_URL, LOGIN_ENDPOINT, CREATE_USER_ENDPOINT } from '../constants/api';
 
 /**
  * Service for handling user-related API calls and authentication
