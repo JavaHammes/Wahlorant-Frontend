@@ -26,7 +26,7 @@ export const isAdmin = async () => {
     }
 
     const data = await response.json();
-    return data.user && data.user.role === 'admin';
+    return Boolean(data.user && data.user.role === 'admin');
   } catch (error) {
     console.error('Admin check failed:', error);
     return false;
@@ -58,7 +58,7 @@ export const isUser = async () => {
 
     const data = await response.json();
     // Check that user exists and role is NOT admin
-    return data.user && data.user.role !== 'admin';
+    return Boolean(data.user && data.user.role !== 'admin');
   } catch (error) {
     console.error('User check failed:', error);
     return false;
