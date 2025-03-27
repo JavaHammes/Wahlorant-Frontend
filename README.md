@@ -1,1 +1,1 @@
-# Whalorant-Frontend
+# Wahlorant-Frontend
