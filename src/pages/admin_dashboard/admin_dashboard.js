@@ -78,27 +78,8 @@ const AdminDashboardPage = () => {
       }));
 
       setElections(transformedElections);
+      setStats(calculateStats(transformedElections));
 
-      // Calculate statistics
-      const now = new Date();
-      const statsData = {
-        total: transformedElections.length,
-        active: transformedElections.filter(e => {
-          const start = new Date(e.startDate);
-          const end = new Date(e.endDate);
-          return now >= start && now <= end;
-        }).length,
-        upcoming: transformedElections.filter(e => {
-          const start = new Date(e.startDate);
-          return now < start;
-        }).length,
-        completed: transformedElections.filter(e => {
-          const end = new Date(e.endDate);
-          return now > end;
-        }).length
-      };
-
-      setStats(statsData);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       // Show error message to user
@@ -397,23 +378,41 @@ const AdminDashboardPage = () => {
   };
 
   const handleDeleteElection = async (id) => {
-    if (window.confirm('Sind Sie sicher, dass Sie diese Wahl löschen möchten?')) {
-      try {
-        await votingService.deleteVoting(id);
-        // Remove from local state
-        setElections(elections.filter(election => election.id !== id));
-        // Update stats
-        setStats({
-          ...stats,
-          total: stats.total - 1
-        });
-        alert('Wahl erfolgreich gelöscht!');
-      } catch (error) {
-        console.error('Error deleting election:', error);
-        alert(`Fehler beim Löschen der Wahl: ${error.message}`);
-      }
+  if (window.confirm('Sind Sie sicher, dass Sie diese Wahl löschen möchten?')) {
+    try {
+      await votingService.deleteVoting(id);
+
+      const updatedElections = elections.filter(election => election.id !== id);
+      setElections(updatedElections);
+      setStats(calculateStats(updatedElections));
+
+      alert('Wahl erfolgreich gelöscht!');
+    } catch (error) {
+      console.error('Error deleting election:', error);
+      alert(`Fehler beim Löschen der Wahl: ${error.message}`);
     }
+  }
+};
+
+const calculateStats = (elections) => {
+  const now = new Date();
+  return {
+    total: elections.length,
+    active: elections.filter(e => {
+      const start = new Date(e.startDate);
+      const end = new Date(e.endDate);
+      return now >= start && now <= end;
+    }).length,
+    upcoming: elections.filter(e => {
+      const start = new Date(e.startDate);
+      return now < start;
+    }).length,
+    completed: elections.filter(e => {
+      const end = new Date(e.endDate);
+      return now > end;
+    }).length
   };
+};
 
   const refreshData = () => {
     loadDashboardData();
