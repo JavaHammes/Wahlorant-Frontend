@@ -1,6 +1,4 @@
-// src/requests/authService.js
-
-import { API_URL, USER_ENDPOINT } from '../constants/api';
+import { API_URL, USER_ENDPOINT, VOTING_STATION_ENDPOINT } from '../constants/api';
 
 /**
  * Check if the user is an admin by verifying their role with the server
@@ -61,6 +59,38 @@ export const isUser = async () => {
     return Boolean(data.user && data.user.role !== 'admin');
   } catch (error) {
     console.error('User check failed:', error);
+    return false;
+  }
+};
+
+/**
+ * Check if the current token belongs to a voting station
+ * @returns {Promise<boolean>} True if the token belongs to a voting station
+ */
+export const isVotingStation = async () => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}${VOTING_STATION_ENDPOINT}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = await response.json();
+    // Check that votingstation exists in the response
+    return Boolean(data.status === 'success' && data.votingstation);
+  } catch (error) {
+    console.error('Voting station check failed:', error);
     return false;
   }
 };

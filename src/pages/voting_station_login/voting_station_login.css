@@ -1,0 +1,269 @@
+.votingstation-login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.vs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 50px;
+  background-color: rgba(25, 25, 25, 0.8);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.vs-logo h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #4da6ff;
+  letter-spacing: 1px;
+}
+
+.vs-logo a {
+  text-decoration: none;
+}
+
+.vs-nav-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.vs-back-btn {
+  padding: 8px 20px;
+  border: 2px solid #4da6ff;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4da6ff;
+  background-color: transparent;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.vs-back-btn:hover {
+  background-color: rgba(77, 166, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.vs-login-container {
+  display: flex;
+  flex: 1;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.vs-login-card {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  border: 1px solid #333;
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vs-login-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.vs-login-header h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, #4da6ff, #c173ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.vs-login-header p {
+  color: #a0a0a0;
+  font-size: 1rem;
+}
+
+.vs-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.vs-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vs-form-group label {
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  font-weight: 500;
+}
+
+.vs-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.vs-input-icon {
+  position: absolute;
+  right: 15px;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.vs-input-container input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #252525;
+  color: #e0e0e0;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.vs-input-container input:focus {
+  outline: none;
+  border-color: #4da6ff;
+  box-shadow: 0 0 0 2px rgba(77, 166, 255, 0.2);
+}
+
+.vs-input-container input::placeholder {
+  color: #666;
+}
+
+.vs-login-button {
+  margin-top: 25px;
+  padding: 14px;
+  background: linear-gradient(90deg, #4da6ff, #2f8ce0);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(77, 166, 255, 0.3);
+}
+
+.vs-login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(77, 166, 255, 0.4);
+}
+
+.vs-info-box {
+  margin-top: 35px;
+  padding: 16px;
+  background-color: rgba(77, 166, 255, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #4da6ff;
+}
+
+.vs-info-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #b0b0b0;
+  line-height: 1.5;
+}
+
+.vs-admin-link {
+  color: #4da6ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.vs-admin-link:hover {
+  text-decoration: underline;
+}
+
+.vs-footer {
+  background-color: #151515;
+  padding: 20px;
+  text-align: center;
+  margin-top: auto;
+  border-top: 1px solid #333;
+}
+
+.vs-footer p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.vs-error-message {
+  background-color: rgba(255, 75, 75, 0.1);
+  border: 1px solid rgba(255, 75, 75, 0.3);
+  color: #ff4b4b;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.vs-login-button:disabled {
+  background: linear-gradient(90deg, #7c9cba, #536f8a);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Cool focus effect */
+.vs-input-container input:focus {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(77, 166, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0);
+  }
+}
+
+@media (max-width: 768px) {
+  .vs-header {
+    padding: 15px 20px;
+  }
+
+  .vs-logo h1 {
+    font-size: 1.8rem;
+  }
+
+  .vs-login-container {
+    padding: 20px;
+  }
+
+  .vs-login-card {
+    padding: 25px;
+  }
+
+  .vs-login-header h2 {
+    font-size: 1.7rem;
+  }
+}

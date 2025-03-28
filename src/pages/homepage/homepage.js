@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {USER_DASHBOARD_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE, ABOUT_ROUTE, VOTING_ROUTE} from "../../constants/routes";
+import {USER_DASHBOARD_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE, ABOUT_ROUTE, VOTING_LOGIN_ROUTE} from "../../constants/routes";
 import './homepage.css';
 
 const HomePage = () => {
@@ -13,7 +13,7 @@ const HomePage = () => {
           <h1>Wahlorant</h1>
         </div>
         <div className="auth-buttons">
-          <button className="vote-btn" onClick={() => navigate(VOTING_ROUTE)}>Stimmen abgeben</button>
+          <button className="vote-btn" onClick={() => navigate(VOTING_LOGIN_ROUTE)}>Stimmen abgeben</button>
           <button className="login-btn" onClick={() => navigate(LOGIN_ROUTE)}>Anmelden</button>
         </div>
       </header>

@@ -4,3 +4,7 @@ export const USER_ENDPOINT = 'api/user/';
 export const LOGIN_ENDPOINT = 'api/user/login';
 export const VOTING_ENDPOINT = 'api/voting';
 export const CREATE_VOTING_ENDPOINT = 'api/voting/create';
+export const VOTING_ENDPOINT_ADDON = '/results';
+export const VOTING_STATION_ENDPOINT = 'api/votingstation';
+export const VOTING_STATION_LOGIN_ENDPOINT = 'api/votingstation/login';
+export const VOTING_STATION_SUBMISSION_ENDPOINT = 'api/votingstation/submit';

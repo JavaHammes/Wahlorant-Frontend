@@ -1,4 +1,4 @@
-import { API_URL, VOTING_ENDPOINT, CREATE_VOTING_ENDPOINT } from '../constants/api';
+import { API_URL, VOTING_ENDPOINT, CREATE_VOTING_ENDPOINT, VOTING_ENDPOINT_ADDON } from '../constants/api';
 
 /**
  * Helper function to get authentication headers
@@ -256,6 +256,32 @@ const votingService = {
       return true;
     } catch (error) {
       console.error(`Failed to delete voting with ID ${votingId}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Gets the results for a specific voting
+   * @param {string} votingId - ID of the voting to retrieve results for
+   * @returns {Promise<Object>} - Voting results data
+   */
+  getVotingResults: async (votingId) => {
+    try {
+      const headers = getAuthHeaders();
+
+      const response = await fetch(`${API_URL}${VOTING_ENDPOINT}/${votingId}${VOTING_ENDPOINT_ADDON}`, {
+        method: 'GET',
+        headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error fetching voting results: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.voting || null;
+    } catch (error) {
+      console.error(`Failed to get results for voting with ID ${votingId}:`, error);
       throw error;
     }
   }

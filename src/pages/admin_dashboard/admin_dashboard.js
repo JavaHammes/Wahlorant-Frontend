@@ -3,7 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { HOMEPAGE_ROUTE, REGISTER_ROUTE } from '../../constants/routes';
 import { logout } from '../../requests/authService';
 import votingService from '../../requests/votingService';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import './admin_dashboard.css';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AdminDashboardPage = () => {
   const navigate = useNavigate();
@@ -15,6 +19,9 @@ const AdminDashboardPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stationPasswords, setStationPasswords] = useState([]);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const [resultsData, setResultsData] = useState(null);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -414,6 +421,27 @@ const calculateStats = (elections) => {
   };
 };
 
+const handleViewResults = async (votingId) => {
+  try {
+    setIsLoadingResults(true);
+    const results = await votingService.getVotingResults(votingId);
+    setResultsData(results);
+    setShowResultsModal(true);
+  } catch (error) {
+    console.error('Error fetching results:', error);
+    alert('Fehler beim Laden der Wahlergebnisse.');
+  } finally {
+    setIsLoadingResults(false);
+  }
+};
+
+// Function to close the results modal
+const closeResultsModal = () => {
+  setShowResultsModal(false);
+  setResultsData(null);
+};
+
+
   const refreshData = () => {
     loadDashboardData();
   };
@@ -525,7 +553,7 @@ const calculateStats = (elections) => {
                       <div className="election-actions">
                         <button
                           className="view-results-btn"
-                          onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
+                          onClick={() => handleViewResults(election.id)}
                         >
                           Ergebnisse anzeigen
                         </button>
@@ -791,6 +819,89 @@ const calculateStats = (elections) => {
           </div>
         </div>
       )}
+
+      {showResultsModal && resultsData && (
+        <div className="modal-overlay">
+          <div className="modal-content results-modal">
+            <div className="modal-header">
+              <h3>Wahlergebnisse: {resultsData.name}</h3>
+              <button className="close-modal" onClick={closeResultsModal}>×</button>
+            </div>
+
+            <div className="results-container">
+              {isLoadingResults ? (
+                <div className="loading-indicator">Ergebnisse werden geladen...</div>
+              ) : (
+                <>
+                  <div className="results-summary">
+                    <p>Wahlzeitraum: {formatDate(resultsData.startDate)} - {formatDate(resultsData.endDate)}</p>
+                    <p>Gesamtstimmen: {resultsData.votingstations?.reduce((total, station) =>
+                      total + (station.voterCount || 0), 0) || 0}</p>
+                  </div>
+
+                  {resultsData.votetypes?.length > 0 ? (
+                    <div className="results-charts">
+                      {resultsData.votetypes.map(voteType => (
+                        <div key={voteType.id} className="vote-type-result">
+                          <h4>{voteType.name}</h4>
+                          <div className="chart-container">
+                            <Pie
+                              data={{
+                                labels: voteType.voteoptions.map(option => option.name),
+                                datasets: [
+                                  {
+                                    data: voteType.voteoptions.map(option => {
+                                      return resultsData.votecounts?.filter(
+                                        count => count.voteoptionId === option.id
+                                      ).reduce((sum, count) => sum + count.count, 0) || 0;
+                                    }),
+                                    backgroundColor: ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#8c44df', '#FF6D01'],
+                                    hoverBackgroundColor: ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#8c44df', '#FF6D01']
+                                  }
+                                ]
+                              }}
+                              options={{
+                                responsive: true,
+                                plugins: {
+                                  legend: {
+                                    position: 'right',
+                                  },
+                                  tooltip: {
+                                    callbacks: {
+                                      label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
+                                        return `${label}: ${value} Stimmen (${percentage})`;
+                                      }
+                                    }
+                                  }
+                                }
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-results">
+                      <p>Keine Ergebnisse verfügbar.</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="form-actions">
+              <button type="button" className="submit-btn" onClick={closeResultsModal}>
+                Schließen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       <footer className="footer">
         <p>© 2025 Wahlorant | Studentenprojekt</p>
