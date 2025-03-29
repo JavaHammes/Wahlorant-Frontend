@@ -1,4 +1,5 @@
 import { API_URL, LOGIN_ENDPOINT, CREATE_USER_ENDPOINT } from '../constants/api';
+import { getAuthHeaders } from './authService'
 
 /**
  * Service for handling user-related API calls and authentication
@@ -52,18 +53,11 @@ const userService = {
    */
   registerUser: async (userData) => {
     try {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        throw new Error('Authentication required. Please login first.');
-      }
+      const headers = getAuthHeaders();
 
       const response = await fetch(`${API_URL}${CREATE_USER_ENDPOINT}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: headers,
         body: JSON.stringify(userData),
       });
 

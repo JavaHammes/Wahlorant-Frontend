@@ -1,5 +1,5 @@
 import { API_URL, VOTING_STATION_LOGIN_ENDPOINT, VOTING_STATION_SUBMISSION_ENDPOINT } from '../constants/api';
-import { getAuthHeaders } from '../utils/request_auth';
+import { getAuthHeaders } from './authService'
 
 /**
  * Service for handling voting station-related API calls and authentication
@@ -30,17 +30,25 @@ const votingStationService = {
         throw new Error(data.message || 'Login fehlgeschlagen. Bitte überprüfen Sie Ihre Zugangsdaten.');
       }
 
-      // Store auth data in localStorage
-      if (data.votingstation && data.votingstation.token) {
-        localStorage.setItem('token', data.votingstation.token);
-      }
+      // Store auth data and station information in localStorage
+      if (data.votingstation) {
+        const station = data.votingstation;
 
-      if (data.votingstation && data.votingstation.loginId) {
-        localStorage.setItem('stationLoginId', data.votingstation.loginId);
-      }
+        if (station.token) {
+          localStorage.setItem('token', station.token);
+        }
 
-      if (data.votingstation && data.votingstation.name) {
-        localStorage.setItem('stationName', data.votingstation.name);
+        localStorage.setItem('votingId', station.votingId);
+        localStorage.setItem('stationName', station.name);
+        localStorage.setItem('voterCount', station.voterCount.toString());
+
+        if (station.firstSubmitTime) {
+          localStorage.setItem('firstSubmitTime', station.firstSubmitTime);
+        }
+
+        if (station.lastSubmitTime) {
+          localStorage.setItem('lastSubmitTime', station.lastSubmitTime);
+        }
       }
 
       return data.votingstation;
@@ -58,6 +66,11 @@ const votingStationService = {
   submitVotes: async (votingData) => {
     try {
       const headers = getAuthHeaders();
+      const votingId = localStorage.getItem('votingId');
+
+      if (!votingId) {
+        throw new Error('Voting ID not found. Please log in again.');
+      }
 
       const response = await fetch(`${API_URL}${VOTING_STATION_SUBMISSION_ENDPOINT}`, {
         method: 'POST',
@@ -66,25 +79,29 @@ const votingStationService = {
       });
 
       if (!response.ok) {
-        throw new Error(`Fehler beim Übermitteln der Ergebnisse: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Fehler beim Übermitteln der Ergebnisse: ${response.status}`);
       }
 
       const data = await response.json();
+
+      // Update submission times in localStorage if returned in response
+      if (data.votingstation) {
+        if (data.votingstation.firstSubmitTime) {
+          localStorage.setItem('firstSubmitTime', data.votingstation.firstSubmitTime);
+        }
+
+        if (data.votingstation.lastSubmitTime) {
+          localStorage.setItem('lastSubmitTime', data.votingstation.lastSubmitTime);
+        }
+      }
+
       return data;
     } catch (error) {
       console.error('Fehler bei der Stimmabgabe:', error);
       throw error;
     }
   },
-
-  /**
-   * Log out the current voting station by removing their tokens
-   */
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('stationLoginId');
-    localStorage.removeItem('stationName');
-  }
 };
 
 export default votingStationService;

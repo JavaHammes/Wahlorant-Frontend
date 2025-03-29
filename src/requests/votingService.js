@@ -1,21 +1,5 @@
 import { API_URL, VOTING_ENDPOINT, CREATE_VOTING_ENDPOINT, VOTING_ENDPOINT_ADDON } from '../constants/api';
-
-/**
- * Helper function to get authentication headers
- * @returns {Object} Headers object with Authorization token
- */
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-
-  if (!token) {
-    throw new Error('No authentication token found. Please log in again.');
-  }
-
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  };
-};
+import { getAuthHeaders } from './authService'
 
 /**
  * Service for handling voting-related API calls and data processing

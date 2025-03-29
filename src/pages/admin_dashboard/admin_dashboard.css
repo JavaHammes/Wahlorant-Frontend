@@ -392,6 +392,15 @@
   max-height: 85vh;
   overflow: hidden;
   animation: modalFadeIn 0.3s ease-out;
+  color: #ffffff;
+}
+
+.results-modal {
+  max-width: 90%;
+  width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -401,6 +410,10 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-radius: 12px 12px 0 0;
 }
 
 .modal-header h3 {
@@ -422,45 +435,7 @@
   color: #ff4b4b;
 }
 
-/* Style the scrollbar for the election form */
-.election-form::-webkit-scrollbar {
-  width: 8px;
-}
-
-.election-form::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.election-form::-webkit-scrollbar-thumb {
-  background: rgba(77, 166, 255, 0.3);
-  border-radius: 4px;
-}
-
-.election-form::-webkit-scrollbar-thumb:hover {
-  background: rgba(77, 166, 255, 0.5);
-}
-
-/* Style the scrollbar for the modal overlay (in case it needs to scroll) */
-.modal-overlay::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-overlay::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.modal-overlay::-webkit-scrollbar-thumb {
-  background: rgba(77, 166, 255, 0.3);
-  border-radius: 4px;
-}
-
-.modal-overlay::-webkit-scrollbar-thumb:hover {
-  background: rgba(77, 166, 255, 0.5);
-}
-
-/* Form Styles */
+/* Scrollable containers */
 .election-form {
   overflow-y: auto;
   max-height: calc(85vh - 70px - 70px);
@@ -468,6 +443,54 @@
   padding-bottom: 80px;
 }
 
+.results-container {
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(90vh - 130px); /* Subtract header and footer height */
+  scrollbar-width: thin;
+  scrollbar-color: #666 #333;
+}
+
+/* Scrollbar Styling */
+.election-form::-webkit-scrollbar,
+.results-container::-webkit-scrollbar,
+.voting-stations-list::-webkit-scrollbar,
+.vote-types-list::-webkit-scrollbar,
+.password-list::-webkit-scrollbar,
+.modal-overlay::-webkit-scrollbar {
+  width: 8px;
+}
+
+.election-form::-webkit-scrollbar-track,
+.results-container::-webkit-scrollbar-track,
+.voting-stations-list::-webkit-scrollbar-track,
+.vote-types-list::-webkit-scrollbar-track,
+.password-list::-webkit-scrollbar-track,
+.modal-overlay::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.election-form::-webkit-scrollbar-thumb,
+.results-container::-webkit-scrollbar-thumb,
+.voting-stations-list::-webkit-scrollbar-thumb,
+.vote-types-list::-webkit-scrollbar-thumb,
+.password-list::-webkit-scrollbar-thumb,
+.modal-overlay::-webkit-scrollbar-thumb {
+  background: rgba(77, 166, 255, 0.3);
+  border-radius: 4px;
+}
+
+.election-form::-webkit-scrollbar-thumb:hover,
+.results-container::-webkit-scrollbar-thumb:hover,
+.voting-stations-list::-webkit-scrollbar-thumb:hover,
+.vote-types-list::-webkit-scrollbar-thumb:hover,
+.password-list::-webkit-scrollbar-thumb:hover,
+.modal-overlay::-webkit-scrollbar-thumb:hover {
+  background: rgba(77, 166, 255, 0.5);
+}
+
+/* Form Styles */
 .form-group {
   margin-bottom: 20px;
 }
@@ -509,6 +532,13 @@
   justify-content: flex-end;
   gap: 15px;
   margin-top: 20px;
+  padding: 15px 20px;
+  border-top: 1px solid #444;
+  position: sticky;
+  bottom: 0;
+  background-color: #222;
+  border-radius: 0 0 8px 8px;
+  z-index: 2;
 }
 
 .cancel-btn, .submit-btn {
@@ -554,150 +584,6 @@
 .footer p {
   color: #666;
   font-size: 0.9rem;
-}
-
-/* Animations */
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 5px rgba(77, 166, 255, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0);
-  }
-}
-
-/* Animation Delays for Cards */
-.election-card:nth-child(1) { animation-delay: 0.1s; }
-.election-card:nth-child(2) { animation-delay: 0.2s; }
-.election-card:nth-child(3) { animation-delay: 0.3s; }
-.election-card:nth-child(4) { animation-delay: 0.4s; }
-.election-card:nth-child(5) { animation-delay: 0.5s; }
-.election-card:nth-child(6) { animation-delay: 0.6s; }
-.election-card:nth-child(7) { animation-delay: 0.7s; }
-.election-card:nth-child(8) { animation-delay: 0.8s; }
-
-/* Focus Effects */
-input:focus, textarea:focus {
-  animation: pulse 1.5s infinite;
-}
-
-/* Responsive Styles */
-@media (max-width: 992px) {
-  .admin-container {
-    padding: 20px;
-  }
-
-  .elections-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .admin-header {
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-  }
-
-  .logo h1 {
-    font-size: 2rem;
-  }
-
-  .admin-info, .admin-actions {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .dashboard-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-  }
-
-  .admin-buttons {
-    width: 100%;
-  }
-
-  .create-btn {
-    flex: 1;
-    justify-content: center;
-  }
-
-  .elections-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .elections-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card {
-    padding: 15px;
-  }
-
-  .election-header {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .status-badge {
-    align-self: flex-start;
-    margin-left: 0;
-  }
-
-  .election-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .view-results-btn {
-    width: 100%;
-  }
-
-  .action-buttons {
-    width: 100%;
-    justify-content: flex-end;
-  }
-}
-
-/* Add these styles to your admin_dashboard.css file */
-
-/* Admin buttons container */
-.admin-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
 /* Voting Stations Section */
@@ -756,6 +642,7 @@ input:focus, textarea:focus {
   padding: 10px;
   border: 1px solid #333;
   transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .voting-station-item:hover {
@@ -788,24 +675,6 @@ input:focus, textarea:focus {
   color: #e0e0e0;
   font-size: 0.9rem;
   text-align: right;
-}
-
-.voting-stations-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.voting-stations-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.voting-stations-list::-webkit-scrollbar-thumb {
-  background: rgba(77, 166, 255, 0.3);
-  border-radius: 4px;
-}
-
-.voting-stations-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(77, 166, 255, 0.5);
 }
 
 .station-name-input:focus,
@@ -856,35 +725,7 @@ input:focus, textarea:focus {
   border: 1px solid rgba(77, 166, 255, 0.2);
 }
 
-.voting-station-item {
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 768px) {
-  .station-inputs {
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-  }
-
-  .station-name-input,
-  .station-votes-input {
-    width: 100%;
-  }
-}
-
-/* Vote Types Section with Black Fields */
+/* Vote Types Section */
 .vote-types-section {
   background-color: rgba(77, 166, 255, 0.05);
   border-radius: 8px;
@@ -914,7 +755,6 @@ input:focus, textarea:focus {
   border-color: #4da6ff;
 }
 
-/* Style the vote options container */
 .vote-options-container {
   margin-top: 12px;
   background-color: rgba(77, 166, 255, 0.05);
@@ -947,7 +787,6 @@ input:focus, textarea:focus {
   gap: 8px;
 }
 
-/* Input styling - make black to match voting stations */
 .vote-type-input, .vote-option-input {
   background-color: #2a2a2a;
   border: 1px solid #333;
@@ -963,7 +802,6 @@ input:focus, textarea:focus {
   box-shadow: 0 0 0 2px rgba(77, 166, 255, 0.2);
 }
 
-/* Button styling */
 .add-type-btn, .add-option-btn {
   background-color: transparent;
   color: #4da6ff;
@@ -1000,22 +838,6 @@ input:focus, textarea:focus {
   transform: scale(1.1);
 }
 
-/* Add a nice scrollbar */
-.vote-types-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.vote-types-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.vote-types-list::-webkit-scrollbar-thumb {
-  background: rgba(77, 166, 255, 0.3);
-  border-radius: 4px;
-}
-
-/* Vote type header with flex layout */
 .vote-type-header {
   display: flex;
   justify-content: space-between;
@@ -1027,6 +849,7 @@ input:focus, textarea:focus {
   flex-grow: 1;
 }
 
+/* Refresh Button */
 .refresh-btn {
   display: flex;
   align-items: center;
@@ -1137,22 +960,107 @@ input:focus, textarea:focus {
   transform: scale(1.1);
 }
 
-.password-list::-webkit-scrollbar {
-  width: 8px;
+/* Results Content Styling */
+.vote-type-result {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
 }
 
-.password-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+.vote-type-heading {
+  color: #4dabf7;
+  border-bottom: 2px solid #4dabf7;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
 }
 
-.password-list::-webkit-scrollbar-thumb {
-  background: rgba(77, 166, 255, 0.3);
-  border-radius: 4px;
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  color: #fff;
 }
 
-.password-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(77, 166, 255, 0.5);
+.results-table th,
+.results-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.results-table th {
+  background-color: #333;font-weight: bold;
+}
+
+.results-table .totals-row {
+  background-color: #3d3d3d;
+  font-weight: bold;
+}
+
+.results-summary {
+  background-color: #2a2a2a;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.voting-stations-results {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.stations-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  color: #fff;
+}
+
+.stations-table th,
+.stations-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.stations-table th {
+  background-color: #333;
+  font-weight: bold;
+}
+
+.stations-table tr:nth-child(even) {
+  background-color: #222;
+}
+
+/* Make sure the body doesn't scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
@@ -1166,8 +1074,106 @@ input:focus, textarea:focus {
   }
 }
 
-/* Responsive styles */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(77, 166, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(77, 166, 255, 0);
+  }
+}
+
+/* Animation Delays for Cards */
+.election-card:nth-child(1) { animation-delay: 0.1s; }
+.election-card:nth-child(2) { animation-delay: 0.2s; }
+.election-card:nth-child(3) { animation-delay: 0.3s; }
+.election-card:nth-child(4) { animation-delay: 0.4s; }
+.election-card:nth-child(5) { animation-delay: 0.5s; }
+.election-card:nth-child(6) { animation-delay: 0.6s; }
+.election-card:nth-child(7) { animation-delay: 0.7s; }
+.election-card:nth-child(8) { animation-delay: 0.8s; }
+
+/* Focus Effects */
+input:focus, textarea:focus {
+  animation: pulse 1.5s infinite;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .admin-container {
+    padding: 20px;
+  }
+
+  .elections-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .results-modal {
+    width: 95%;
+  }
+}
+
 @media (max-width: 768px) {
+  .admin-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .logo h1 {
+    font-size: 2rem;
+  }
+
+  .admin-info, .admin-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .admin-buttons {
+    width: 100%;
+  }
+
+  .create-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .elections-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .station-inputs {
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .station-name-input,
+  .station-votes-input {
+    width: 100%;
+  }
+
+  .vote-type-result {
+    padding: 15px;
+  }
+
+  .chart-container {
+    height: 250px;
+  }
+
   .password-row {
     flex-direction: column;
     align-items: flex-start;
@@ -1180,5 +1186,43 @@ input:focus, textarea:focus {
 
   .copy-btn {
     margin-left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .elections-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .election-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+    margin-left: 0;
+  }
+
+  .election-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .view-results-btn {
+    width: 100%;
+  }
+
+  .action-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .modal-content {
+    max-width: 95%;
   }
 }

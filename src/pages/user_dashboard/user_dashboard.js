@@ -3,7 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { HOMEPAGE_ROUTE } from '../../constants/routes';
 import { logout } from '../../requests/authService';
 import votingService from '../../requests/votingService';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import './user_dashboard.css';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const UserDashboardPage = () => {
   const navigate = useNavigate();
@@ -15,6 +19,9 @@ const UserDashboardPage = () => {
     upcoming: 0,
     completed: 0
   });
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const [resultsData, setResultsData] = useState(null);
+  const [isLoadingResults, setIsLoadingResults] = useState(false);
 
   // Load data when component mounts
   useEffect(() => {
@@ -107,6 +114,26 @@ const UserDashboardPage = () => {
 
   const refreshData = () => {
     loadVotingsData();
+  };
+
+  const handleViewResults = async (votingId) => {
+    try {
+      setIsLoadingResults(true);
+      const results = await votingService.getVotingResults(votingId);
+      setResultsData(results);
+      setShowResultsModal(true);
+    } catch (error) {
+      console.error('Error fetching results:', error);
+      alert('Fehler beim Laden der Wahlergebnisse.');
+    } finally {
+      setIsLoadingResults(false);
+    }
+  };
+
+  // Function to close the results modal
+  const closeResultsModal = () => {
+    setShowResultsModal(false);
+    setResultsData(null);
   };
 
   return (
@@ -207,10 +234,10 @@ const UserDashboardPage = () => {
 
                       <div className="voting-actions">
                         <button
-                          className="view-details-btn"
-                          onClick={() => alert('Diese Funktion ist noch in Entwicklung')}
+                          className="view-results-btn"
+                          onClick={() => handleViewResults(voting.id)}
                         >
-                          Details anzeigen
+                          Ergebnisse anzeigen
                         </button>
                       </div>
                     </div>
@@ -221,6 +248,148 @@ const UserDashboardPage = () => {
           </div>
         )}
       </main>
+
+      {showResultsModal && resultsData && (
+        <div className="modal-overlay">
+          <div className="modal-content results-modal">
+            <div className="modal-header">
+              <h3>Wahlergebnisse: {resultsData.name}</h3>
+              <button className="close-modal" onClick={closeResultsModal}>×</button>
+            </div>
+
+            <div className="results-container">
+              {isLoadingResults ? (
+                <div className="loading-indicator">Ergebnisse werden geladen...</div>
+              ) : (
+                <>
+                  <div className="results-summary">
+                    <p>Wahlzeitraum: {formatDate(resultsData.startDate)} - {formatDate(resultsData.endDate)}</p>
+                    <p>Gesamtstimmen: {resultsData.votingstations?.reduce((total, station) =>
+                      total + (station.voterCount || 0), 0) || 0}</p>
+                  </div>
+
+                  {resultsData.votetypes && resultsData.votetypes.length > 0 ? (
+                    <div className="results-charts">
+                      {resultsData.votetypes.map((voteType, index) => (
+                        <div key={voteType.id || index} className="vote-type-result">
+                          <h4 className="vote-type-heading">{voteType.name}</h4>
+                          <div className="chart-container">
+                            {voteType.voteoptions && voteType.voteoptions.length > 0 ? (
+                              <Pie
+                                data={{
+                                  labels: voteType.voteoptions.map(option => option.name),
+                                  datasets: [
+                                    {
+                                      data: voteType.voteoptions.map(option => option.totalVotecount || 0),
+                                      backgroundColor: ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#8c44df', '#FF6D01'],
+                                      hoverBackgroundColor: ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#8c44df', '#FF6D01']
+                                    }
+                                  ]
+                                }}
+                                options={{
+                                  responsive: true,
+                                  plugins: {
+                                    legend: {
+                                      position: 'right',
+                                    },
+                                    tooltip: {
+                                      callbacks: {
+                                        label: function(context) {
+                                          const label = context.label || '';
+                                          const value = context.raw || 0;
+                                          const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                          const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
+                                          return `${label}: ${value} Stimmen (${percentage})`;
+                                        }
+                                      }
+                                    }
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <p>Keine Optionen für diesen Wahltyp verfügbar.</p>
+                            )}
+                          </div>
+
+                          {/* Results Table */}
+                          <div className="results-table-container">
+                            <table className="results-table">
+                              <thead>
+                                <tr>
+                                  <th>Option</th>
+                                  <th>Stimmen</th>
+                                  <th>Prozent</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {voteType.voteoptions && voteType.voteoptions.map((option, optIndex) => {
+                                  const votes = option.totalVotecount || 0;
+                                  const totalVotes = voteType.voteoptions.reduce((sum, opt) => sum + (opt.totalVotecount || 0), 0);
+                                  const percentage = totalVotes > 0 ? ((votes / totalVotes) * 100).toFixed(1) : '0.0';
+
+                                  return (
+                                    <tr key={option.id || optIndex}>
+                                      <td>{option.name}</td>
+                                      <td>{votes}</td>
+                                      <td>{percentage}%</td>
+                                    </tr>
+                                  );
+                                })}
+                                <tr className="totals-row">
+                                  <td><strong>Gesamt</strong></td>
+                                  <td><strong>{voteType.voteoptions ? voteType.voteoptions.reduce((sum, opt) => sum + (opt.totalVotecount || 0), 0) : 0}</strong></td>
+                                  <td><strong>100%</strong></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-results">
+                      <p>Keine Ergebnisse verfügbar.</p>
+                    </div>
+                  )}
+
+                  {/* Voting stations information */}
+                  {resultsData.votingstations && resultsData.votingstations.length > 0 && (
+                    <div className="voting-stations-results">
+                      <h4>Wahllokale</h4>
+                      <table className="stations-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Wähler</th>
+                            <th>Erste Abgabe</th>
+                            <th>Letzte Abgabe</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {resultsData.votingstations.map((station, stationIndex) => (
+                            <tr key={station.id || stationIndex}>
+                              <td>{station.name}</td>
+                              <td>{station.voterCount || 0}</td>
+                              <td>{station.firstSubmitTime ? formatDate(station.firstSubmitTime) : 'N/A'}</td>
+                              <td>{station.lastSubmitTime ? formatDate(station.lastSubmitTime) : 'N/A'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="form-actions">
+              <button type="button" className="submit-btn" onClick={closeResultsModal}>
+                Schließen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <footer className="footer">
         <p>© 2025 Wahlorant | Studentenprojekt</p>
