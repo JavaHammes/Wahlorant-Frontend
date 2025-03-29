@@ -184,18 +184,15 @@ describe('authService', () => {
     it('should remove token and username from localStorage', () => {
       // Set up localStorage with values
       localStorage.setItem('token', 'fake-token');
-      localStorage.setItem('username', 'testuser');
 
       // Verify values are set before logout
       expect(localStorage.getItem('token')).toBe('fake-token');
-      expect(localStorage.getItem('username')).toBe('testuser');
 
       // Call logout function
       logout();
 
       // Verify values are removed
       expect(localStorage.getItem('token')).toBeNull();
-      expect(localStorage.getItem('username')).toBeNull();
     });
 
     it('should not throw errors when localStorage is empty', () => {

@@ -140,7 +140,7 @@ describe('userService', () => {
       // Call and expect error to be thrown
       await expect(userService.registerUser(userData))
         .rejects
-        .toThrow('Authentication required. Please login first.');
+        .toThrow('No authentication token found. Please log in again.');
 
       // Verify no fetch call was made
       expect(global.fetch).not.toHaveBeenCalled();

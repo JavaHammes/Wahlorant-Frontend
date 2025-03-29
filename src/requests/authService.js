@@ -137,10 +137,10 @@ export const getCurrentIdentityType = async () => {
  */
 export const logout = async () => {
   try {
-    const identityType = await getCurrentIdentityType();
-
     // Clear token which is common to all identity types
     localStorage.removeItem('token');
+
+    const identityType = await getCurrentIdentityType();
 
     switch (identityType) {
       case 'admin':
