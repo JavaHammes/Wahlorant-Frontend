@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach} from 'vitest';
 import userService from '../../requests/userService';
 import { API_URL, LOGIN_ENDPOINT, CREATE_USER_ENDPOINT } from '../../constants/api';
 

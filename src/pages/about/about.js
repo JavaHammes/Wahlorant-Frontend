@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {HOMEPAGE_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE} from "../../constants/routes";
+import {HOMEPAGE_ROUTE, LOGIN_ROUTE} from "../../constants/routes";
 import './about.css';
 
 const About = () => {

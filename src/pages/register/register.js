@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { HOMEPAGE_ROUTE, ADMIN_DASHBOARD_ROUTE } from "../../constants/routes";
-import { API_URL, CREATE_USER_ENDPOINT } from '../../constants/api';
 import userService from '../../requests/userService';
 import './register.css';
 
@@ -13,8 +12,6 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

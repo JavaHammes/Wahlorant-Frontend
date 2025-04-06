@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {HOMEPAGE_ROUTE, REGISTER_ROUTE, ADMIN_DASHBOARD_ROUTE, USER_DASHBOARD_ROUTE} from "../../constants/routes";
-import { API_URL, LOGIN_ENDPOINT} from "../../constants/api";
+import {HOMEPAGE_ROUTE, ADMIN_DASHBOARD_ROUTE, USER_DASHBOARD_ROUTE} from "../../constants/routes";
 import userService from "../../requests/userService";
 import './login.css';
 

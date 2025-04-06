@@ -23,7 +23,7 @@ const VotingStationLoginPage = () => {
     setIsLoading(true);
 
     try {
-      const station = await votingStationService.login(loginId, password);
+      await votingStationService.login(loginId, password);
 
       // Navigate to the submission page after successful login
       navigate(VOTING_ROUTE);

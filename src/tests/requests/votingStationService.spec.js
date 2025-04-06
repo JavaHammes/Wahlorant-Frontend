@@ -1,7 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import votingStationService from '../../requests/votingStationService';
-import { API_URL, VOTING_STATION_LOGIN_ENDPOINT, VOTING_STATION_SUBMISSION_ENDPOINT } from '../../constants/api';
-import { getAuthHeaders } from '../../requests/authService';
 
 describe('votingStationService', () => {
   beforeEach(() => {

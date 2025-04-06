@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {USER_DASHBOARD_ROUTE, LOGIN_ROUTE, REGISTER_ROUTE, ABOUT_ROUTE, VOTING_LOGIN_ROUTE} from "../../constants/routes";
+import {LOGIN_ROUTE, ABOUT_ROUTE, VOTING_LOGIN_ROUTE} from "../../constants/routes";
 import './homepage.css';
 
 const HomePage = () => {
